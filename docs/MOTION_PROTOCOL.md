@@ -59,6 +59,12 @@ the authoritative fallback. A normal stationary hold has no maximum duration.
 
 ## Units, axes and calibration
 
+The screen-frame mapping below remains unchanged for Full controller mode. Native
+standalone Joy-Con modes additionally transform screen vectors into their logical
+upright hardware frame; see [JOYCON_SETUP.md](JOYCON_SETUP.md#motion-coordinate-contract).
+This does not change the wire version or DSU server.
+
+
 Core Motion `rotationRate` is angular velocity, never Euler attitude angles.
 The phone sums `userAcceleration + gravity` and subtracts a calibrated rotation
 rate bias. It then rotates both vectors from Apple's fixed device axes into a

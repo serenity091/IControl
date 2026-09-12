@@ -12,6 +12,28 @@ import CoreHaptics
     @Published var selected: String?
     @Published var size = 1.0
     @Published var layoutRevision = 0
+    @Published private(set) var configuration: ControllerConfiguration
+    private let preferences: UserDefaults
+    var rebuildLayout: (() -> Void)?
+    init(preferences: UserDefaults = .standard) {
+        self.preferences = preferences
+        let saved = preferences.data(forKey: "controllerConfiguration")
+            .flatMap { try? JSONDecoder().decode(ControllerConfiguration.self, from: $0) } ?? .full
+        configuration = saved.mode == .full ? .full : saved
+        motion.configuration = configuration
+    }
+    func selectConfiguration(_ next: ControllerConfiguration) {
+        let next = next.mode == .full ? ControllerConfiguration.full : next
+        guard next != configuration else { return }
+        clear() // Cancel old contacts and samples before changing their identity.
+        configuration = next; motion.configuration = next
+        selected = nil; size = 1; layoutRevision += 1
+        rebuildLayout?()
+        if let data = try? JSONEncoder().encode(next) { preferences.set(data, forKey: "controllerConfiguration") }
+    }
+    func changedContacts(_ contacts: ContactState, press: Bool = false, immediate: Bool = true) {
+        changed(contacts.state(for: configuration), press: press, immediate: immediate)
+    }
     @Published var haptics = UserDefaults.standard.bool(forKey: "haptics") {
         didSet { UserDefaults.standard.set(haptics, forKey: "haptics") }
     }

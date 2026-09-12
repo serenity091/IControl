@@ -10,6 +10,12 @@ Local phone controllers for Windows and Eden. The desktop app displays a QR code
 
 The Swift/SwiftUI companion is implemented under [ios/](ios/README.md), with QR/manual pairing, independent touches, saved layouts, adjustable native button/joystick haptics, and optional Core Motion. The Python server now includes a loopback DSU/Cemuhook motion bridge for Eden. Rebuild the Windows EXE to use it; existing browser clients remain compatible. See [motion setup](docs/MOTION_PROTOCOL.md), [build and validation results](docs/IOS_VALIDATION.md), and the [Windows rebuild handoff](docs/WINDOWS_REBUILD.md). Actual Eden gameplay still needs Windows validation.
 
+The native app also supports standalone **Left Joy-Con** and **Right Joy-Con**
+modes with Upright/Sideways layouts and distinct SL/SR outputs. See
+[Joy-Con setup and mappings](docs/JOYCON_SETUP.md). The current Windows EXE is
+compatible; this feature needs only the updated iOS build. No two-phone Joy-Con
+Pair setup is included.
+
 ## Open and play
 
 Double-click **dist/IControl.exe**. This is a standalone Windows application: Python and the website are bundled inside the EXE. No console or separate browser window is needed. The native window starts the local server and shows a QR code.

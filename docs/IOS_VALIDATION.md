@@ -147,3 +147,59 @@ preview mode, reads pairing only from localhost, injects it into a mode-0600
 print the pairing URL. Do not share raw Xcode result bundles, device logs or
 build products, which can contain development environment details. Only source
 and summarized test results belong in the Windows handoff.
+
+
+## Standalone Joy-Con implementation — Mac update, 2026-09-12
+
+Pulled shared branch through `87557e9`; Windows fixes `485b46f`, `613ef9f` and
+`ff06a6e` remain ancestors and their implementation files are unchanged. The
+user narrowed this task to **standalone Left/Right Joy-Con** and explicitly
+excluded a two-phone setup. No pair workflow or paired-gameplay claim is included.
+The existing four-source limit remains. The current Windows EXE is compatible;
+only the iOS app needs updating. See [JOYCON_SETUP.md](JOYCON_SETUP.md).
+
+Implemented visible Nintendo identities with one tested carrier table, distinct
+SL/SR, separate stick clicks, upright/sideways defaults, ten independent saved
+layouts, Full v1 migration, persisted mode/holding, and mode transitions through
+the existing neutral InputGate. Motion applies the selected holding transform
+once after the existing screen transform. Haptic settings and all network safety
+mechanisms remain in place.
+
+Completed before the user's request to stop running tests:
+
+- Swift core: **13 passed**, including exhaustive control carriers, simultaneous
+  rails/clicks/triggers/stick, Nintendo positions, axis basis vectors for every
+  mode/holding/screen transform, saved-layout isolation and migration/reset scope.
+- Simulator native XCTest: **16 passed, 3 physical-only tests skipped**. Actual
+  native WebSocket tests observed neutral before new-mode input while contacts
+  were held, rejected an attempted input during the barrier, verified persistent
+  selection, distinct left/right SL/SR carriers and background release. Existing
+  Full and legacy-server networking tests passed.
+- Python: **30 passed**, including recent Windows UDP regression tests; browser:
+  **17 passed**. No production Python, firewall or browser changes were required.
+- Signed physical test build succeeded with Xcode **26.0.1 (17A400)** on the
+  **iPhone 16 Pro Max, iOS 26.6.1**. The queued physical run waited for unlock and
+  had already completed when cancellation was processed: **3 tests passed**.
+  Real sensor streaming was observed in Left Upright, Left Sideways, Right
+  Upright and Right Sideways, with fresh sequence numbers after transitions,
+  finite data and motion stop cleanup. The harness observed **612 active DSU
+  packets**, **zero CRC failures**, and neutral after active motion. These were
+  sequential modes on one phone, not a two-phone test or feature.
+- Simulator mode selection/editor rendering was inspected. A final small spacing
+  adjustment moved the upright minus/plus button to the top row so it does not
+  touch the stick/face cluster. That adjustment is included in the Release build;
+  no tests were rerun after the user requested testing stop.
+
+Further automated and physical interaction tests were stopped at the user's
+request. Still unverified: hand-driven rotation direction for all three axes in
+both physical landscapes; haptic strength/off behavior in the new modes;
+extended real multi-touch/layout editing across app relaunch; actual standalone
+Joy-Con movement, rails and motion aiming in Eden. The previous Windows record
+lists Eden **v0.2.1**, but no new game/emulator session was tested on the Mac.
+Basis/transport tests do not establish physical aiming quality or compatibility
+with games that require a different controller style. No two-phone setup is
+planned as part of this change.
+
+The final signed Release build succeeded and was installed on the iPhone 16 Pro
+Max. Installation is not an additional interaction or gameplay test. No further
+tests were run after the stop request.

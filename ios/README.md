@@ -61,14 +61,20 @@ and reinstall through Xcode. See [Apple's account overview](https://developer.ap
 
 ## Controls
 
+Use the Controller menu to choose Full controller, Left Joy-Con, or Right Joy-Con.
+Each standalone Joy-Con has Upright and Sideways holding layouts, Nintendo
+identities and independent SL/SR carriers. See [JOYCON_SETUP.md](../docs/JOYCON_SETUP.md)
+for exact Eden bindings, stick/motion transforms and supported scope. No two-phone
+Joy-Con Pair setup is included.
+
 Both sticks and every button own independent touches until release/cancellation.
 Editing, resizing, rotation, leaving the app, watchdog resets and reconnection
 cancel old contacts. Lift and touch again after an interruption. A healthy held
 control is sustained by keepalives, not expired by a hold-duration timer.
 
 Edit layout → drag a control → adjust its size; tap empty space to resize all.
-Done saves. Reset restores classic defaults. Portrait/landscape use separate
-UserDefaults keys; layout and installation UUID persist between launches. Pairing
+Done saves. Reset restores classic defaults. Mode/holding/orientation combinations use separate
+UserDefaults keys; old Full layouts migrate without changing their original keys; layout and installation UUID persist between launches. Pairing
 secrets do not. The screen stays awake while connected in the foreground.
 
 Settings provides haptics (off initially) with adjustable strength: heavy button

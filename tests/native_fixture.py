@@ -1,10 +1,21 @@
 """Local-only fixture for Xcode's native networking tests. Never package this file."""
 import sys
+import copy
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from aiohttp import web
-from server import Hub, create_app, local_admin, neutral, sanitize
-hub = Hub(port=8089, simulate=True, dsu_port=0)
+from server import Output, Hub, create_app, local_admin, neutral, sanitize
+class RecordingOutput(Output):
+    def __init__(self):
+        super().__init__(simulate=True)
+        self.frames = []
+    def apply(self, index, state):
+        self.frames.append(copy.deepcopy(state))
+        self.frames = self.frames[-200:]
+        super().apply(index, state)
+
+recording = RecordingOutput()
+hub = Hub(port=8089, output=recording, dsu_port=0)
 app = create_app(hub)
 
 async def expire(request):
@@ -47,5 +58,9 @@ async def legacy_lifecycle(app):
         await runner.cleanup()
 
 app.cleanup_ctx.append(legacy_lifecycle)
+async def frames(request):
+    local_admin(request)
+    return web.json_response({'frames':recording.frames})
+app.router.add_get('/test/frames', frames)
 app.router.add_post('/test/expire', expire)
 web.run_app(app, host='127.0.0.1', port=8089, access_log=None)

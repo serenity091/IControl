@@ -6,6 +6,7 @@ import Foundation
     let manager = CMMotionManager()
     var rotation = ScreenRotation.portrait
     var sensitivity = 1.0
+    var configuration = ControllerConfiguration.full
     private var bias = [0.0, 0.0, 0.0]
     private var calibration: [[Double]]? = nil
     private var sequence = 0
@@ -74,8 +75,8 @@ import Foundation
         }
         sequence += 1
         latest = MotionFrame(seq: sequence, timestamp: Int(data.timestamp * 1_000_000),
-                             accel: MotionAxes.screen(a, rotation).map { min(16, max(-16, $0)) },
-                             gyro: MotionAxes.gyro(r, rotation: rotation, bias: bias, sensitivity: sensitivity))
+                             accel: configuration.holdingVector(MotionAxes.screen(a, rotation)).map { min(16, max(-16, $0)) },
+                             gyro: MotionAxes.gyro(r, rotation: rotation, bias: bias, sensitivity: sensitivity, configuration: configuration))
         if status == "Starting sensors…" { status = "Streaming sensors · calibrate while still" }
     }
 }

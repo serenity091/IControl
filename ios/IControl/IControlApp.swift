@@ -26,6 +26,20 @@ struct ContentView: View {
                 Button(model.editing ? "Done" : "Edit layout") { model.setEditing(!model.editing) }
                 Button { model.clear(); settings = true } label: { Image(systemName: "gearshape") }.accessibilityLabel("Settings")
             }.font(.subheadline)
+            HStack {
+                Picker("Controller", selection: Binding(get: { model.configuration.mode }, set: {
+                    model.selectConfiguration(.init(mode: $0, holding: .upright))
+                })) {
+                    ForEach(ControllerMode.allCases, id: \.self) { Text($0.title).tag($0) }
+                }.pickerStyle(.menu).accessibilityIdentifier("controllerMode")
+                if model.configuration.mode != .full {
+                    Picker("Holding", selection: Binding(get: { model.configuration.holding }, set: {
+                        model.selectConfiguration(.init(mode: model.configuration.mode, holding: $0))
+                    })) {
+                        ForEach(HoldingLayout.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }.pickerStyle(.segmented).accessibilityIdentifier("holdingLayout")
+                }
+            }.font(.subheadline)
             if !model.connected && !model.editing {
                 VStack(spacing: 8) {
                     TextField("Player name", text: $name).textContentType(.nickname).accessibilityIdentifier("playerName")

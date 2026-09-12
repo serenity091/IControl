@@ -23,8 +23,57 @@ import XCTest
         let players = try XCTUnwrap(response["players"] as? [[String: Any]])
         return try XCTUnwrap(players.first?["state"] as? [String: Any])
     }
+    func testJoyConSwitchNeutralBarrierAndWireMappings() async throws {
+        let bootstrap = try await json("api/bootstrap")
+        let token = try XCTUnwrap(bootstrap["adminToken"] as? String)
+        for index in 1...4 { _ = try await json("api/players/\(index)/release",method:"POST",token:token) }
+        let addresses = try XCTUnwrap(bootstrap["addresses"] as? [[String:String]])
+        let pairing = try Pairing(XCTUnwrap(addresses.first?["url"]))
+        let suite = "JoyConModel-" + UUID().uuidString
+        let preferences = UserDefaults(suiteName:suite)!
+        defer { preferences.removePersistentDomain(forName:suite) }
+        let model = ControllerModel(preferences:preferences)
+        defer { model.disconnect() }
+        model.join(url:"http://127.0.0.1:8089/play#key=\(pairing.key)",name:"Joy-Con test")
+        try await waitFor { model.acceptsTouches }
+        var contacts = ContactState()
+        model.cancelContacts = { contacts.clear() }
+        for mode in [ControllerMode.left,.right] {
+            for holding in HoldingLayout.allCases {
+                model.selected = "old-selection"
+                model.selectConfiguration(.init(mode:mode,holding:holding))
+                XCTAssertFalse(model.acceptsTouches)
+                XCTAssertNil(model.selected)
+                XCTAssertEqual(contacts.state,.neutral)
+                XCTAssertNil(model.motion.sample())
+                // Attempting old input during the neutral barrier must be ignored.
+                var old = InputState(); old.buttons = ["HOME"]; old.lx = 1
+                model.changed(old)
+                try await waitFor { model.acceptsTouches }
+                let reset = try await state()
+                XCTAssertEqual(reset["buttons"] as? [String],[])
+                XCTAssertEqual(reset["lx"] as? Double,0)
+                _ = contacts.begin(1,control:"SL"); _ = contacts.begin(2,control:"SR")
+                _ = contacts.begin(3,control:mode == .left ? "L3" : "R3")
+                _ = contacts.begin(4,control:mode == .left ? "LS" : "RS"); contacts.move(4,x:0,y:1)
+                model.changedContacts(contacts)
+                let expected = mode == .left ? ["L3","X","Y"] : ["L","R3"]
+                try await waitFor { try await self.state()["buttons"] as? [String] == expected }
+                let active = try await state()
+                XCTAssertEqual(active["zl"] as? Double,mode == .left ? 0 : 1)
+                let history = try await json("test/frames")["frames"] as! [[String:Any]]
+                let activeIndex = try XCTUnwrap(history.lastIndex { $0["buttons"] as? [String] == expected })
+                XCTAssertGreaterThan(activeIndex,0)
+                XCTAssertEqual(history[activeIndex-1]["buttons"] as? [String],[], "Neutral must precede new mode input")
+            }
+        }
+        XCTAssertEqual(ControllerModel(preferences:preferences).configuration,.init(mode:.right,holding:.sideways))
+        model.setActive(false)
+        try await waitFor { try await self.state()["buttons"] as? [String] == [] }
+    }
     func testOlderServerKeepsButtonsButDisablesMotion() async throws {
         let model = ControllerModel()
+        model.selectConfiguration(.full)
         defer { model.disconnect() }
         model.join(url: "http://127.0.0.1:8090/play#key=legacy-test-key", name: "Legacy test")
         try await waitFor { model.acceptsTouches }
@@ -45,6 +94,7 @@ import XCTest
         let addresses = try XCTUnwrap(bootstrap["addresses"] as? [[String:String]])
         let scanned = try Pairing(XCTUnwrap(addresses.first?["url"]))
         let model = ControllerModel()
+        model.selectConfiguration(.full)
         defer { model.disconnect() }
         model.join(url: "http://127.0.0.1:8089/play#key=\(scanned.key)", name: "Native XCTest")
         try await waitFor { model.acceptsTouches }

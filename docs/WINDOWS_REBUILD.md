@@ -1,5 +1,13 @@
 # Windows rebuild and Eden handoff
 
+**Standalone Joy-Con update:** no Windows rebuild is needed for the new iOS
+Left/Right modes. The current EXE including `ff06a6e` accepts every carrier output
+and motion frame. Keep the recent Windows fixes, update the phone app, and follow
+[JOYCON_SETUP.md](JOYCON_SETUP.md) to bind a single half in Eden. Two-phone pair
+setup is outside this update. The commands below remain the general EXE rebuild
+procedure for server changes.
+
+
 Branch: **codex/native-ios-motion**. Use the final commit reported with this
 handoff. Changes to `server.py`, `desktop.py`, `motion.py`, and
 `static/dashboard.js` must all reach Windows; the old EXE cannot receive motion.

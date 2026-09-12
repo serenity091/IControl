@@ -5,6 +5,7 @@ struct TouchSurface: UIViewRepresentable {
     @ObservedObject var model: ControllerModel
     func makeUIView(context: Context) -> ControlCanvas { ControlCanvas(model: model) }
     func updateUIView(_ view: ControlCanvas, context: Context) {
+        view.synchronizeConfiguration()
         view.editing = model.editing
         view.setNeedsDisplay()
     }
@@ -14,6 +15,9 @@ struct TouchSurface: UIViewRepresentable {
 @MainActor final class ControlCanvas: UIView {
     weak var model: ControllerModel?
     var editing = false
+    private var configuration = ControllerConfiguration.full
+    private let layouts = ControllerLayoutStore()
+    private var definitions: [ControlDefinition] { configuration.definitions }
     private var layout: [String: Placement] = [:]
     private var portrait = false
     private var oldSize = CGSize.zero
@@ -22,18 +26,20 @@ struct TouchSurface: UIViewRepresentable {
     private var nextID = 0
     private var inputs = ContactState()
     private var origins: [Int: (CGPoint, Placement)] = [:]
-    private var storageKey: String { "icontrol-native-layout-v1-\(portrait ? "portrait" : "landscape")" }
+
     init(model: ControllerModel) {
         self.model = model
         super.init(frame: .zero)
         isMultipleTouchEnabled = true; backgroundColor = UIColor(white: 0.84, alpha: 1)
         layer.cornerRadius = 30; clipsToBounds = true
         model.cancelContacts = { [weak self] in self?.clear() }
+        model.rebuildLayout = { [weak self] in self?.synchronizeConfiguration() }
         model.applySize = { [weak self] value in self?.resizeControls(value) }
         isAccessibilityElement = true
         accessibilityLabel = "Xbox controller touch surface"
         accessibilityHint = "Supports independent simultaneous contacts. Use Edit layout to move or resize controls."
         accessibilityIdentifier = "controllerSurface"
+        synchronizeConfiguration()
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override func layoutSubviews() {
@@ -49,19 +55,20 @@ struct TouchSurface: UIViewRepresentable {
     func clear() {
         touchIDs.removeAll(); inputs.clear(); origins.removeAll(); setNeedsDisplay()
     }
-    private func load() {
-        layout = Dictionary(uniqueKeysWithValues: ControlDefinition.all.map { ($0.id, portrait ? $0.portrait : $0.landscape) })
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let saved = try? JSONDecoder().decode([String: Placement].self, from: data) {
-            for (id, placement) in saved where layout[id] != nil { layout[id] = placement.bounded }
-        }
+    func synchronizeConfiguration() {
+        guard let next = model?.configuration, next != configuration else { return }
+        save(); clear(); configuration = next
+        load(); calculateFrames(); setNeedsDisplay()
+        accessibilityLabel = configuration.title + " touch surface"
     }
+    private func load() { layout = layouts.load(configuration, portrait: portrait) }
     private func save() {
-        guard !layout.isEmpty, let data = try? JSONEncoder().encode(layout) else { return }
-        UserDefaults.standard.set(data, forKey: storageKey)
+        if !layout.isEmpty { layouts.save(layout, configuration: configuration, portrait: portrait) }
     }
     func resetLayout() {
-        clear(); UserDefaults.standard.removeObject(forKey: storageKey); load(); calculateFrames(); setNeedsDisplay()
+        model?.clear()
+        layout = layouts.reset(configuration, portrait: portrait)
+        calculateFrames(); setNeedsDisplay()
     }
     private func resizeControls(_ scale: Double) {
         if scale == 0 { resetLayout(); return }
@@ -72,24 +79,25 @@ struct TouchSurface: UIViewRepresentable {
     }
     private func calculateFrames() {
         let unit = portrait ? min(bounds.width / 5.5, bounds.height / 9) : min(bounds.width / 12, bounds.height / 4.8)
-        for definition in ControlDefinition.all {
+        frames.removeAll()
+        for definition in definitions {
             let p = layout[definition.id] ?? definition.landscape
             let diameter = max(22, unit * definition.size * p.scale)
-            let width = ["L","R","ZL","ZR"].contains(definition.id) ? diameter * 1.4 : diameter
+            let width = ["L","R","ZL","ZR","SL","SR"].contains(definition.id) ? diameter * 1.4 : diameter
             let x = min(bounds.width - width/2, max(width/2, bounds.width * p.x / 100))
             let y = min(bounds.height - diameter/2, max(diameter/2, bounds.height * p.y / 100))
             frames[definition.id] = CGRect(x: x-width/2, y: y-diameter/2, width: width, height: diameter)
         }
     }
     override func draw(_ rect: CGRect) {
-        let colors: [String: UIColor] = ["A":UIColor(red:0.2,green:0.52,blue:0.16,alpha:1),
+        let colors: [String: UIColor] = configuration.mode == .full ? ["A":UIColor(red:0.2,green:0.52,blue:0.16,alpha:1),
                                        "B":UIColor(red:0.74,green:0.16,blue:0.15,alpha:1),
                                        "X":UIColor(red:0.14,green:0.4,blue:0.7,alpha:1),
-                                       "Y":UIColor(red:0.88,green:0.71,blue:0.13,alpha:1)]
-        for d in ControlDefinition.all {
+                                       "Y":UIColor(red:0.88,green:0.71,blue:0.13,alpha:1)] : [:]
+        for d in definitions {
             guard let frame = frames[d.id] else { continue }
             let pressed = inputs.contacts.values.contains(d.id) && !editing
-            let path = UIBezierPath(roundedRect: frame, cornerRadius: d.stick || colors[d.id] != nil ? frame.height / 2 : 9)
+            let path = UIBezierPath(roundedRect: frame, cornerRadius: d.stick || ["A","B","X","Y"].contains(d.id) ? frame.height / 2 : 9)
             (pressed ? UIColor(white:0.32,alpha:1) : UIColor(white:0.12,alpha:1)).setFill(); path.fill()
             if editing {
                 (model?.selected == d.id ? UIColor.systemBlue : UIColor.gray).setStroke()
@@ -112,7 +120,7 @@ struct TouchSurface: UIViewRepresentable {
         guard editing || model?.acceptsTouches == true else { return }
         for touch in touches {
             let location = touch.location(in: self)
-            guard let d = ControlDefinition.all.reversed().first(where: { frames[$0.id]?.contains(location) == true }) else {
+            guard let d = definitions.reversed().first(where: { frames[$0.id]?.contains(location) == true }) else {
                 if editing { model?.selected = nil; model?.size = 1 }; continue
             }
             nextID += 1; let token = nextID
@@ -122,7 +130,7 @@ struct TouchSurface: UIViewRepresentable {
             if editing { model?.selected = d.id; model?.size = layout[d.id]!.scale }
             else {
                 move(touch, token: token)
-                model?.changed(inputs.state, press: !d.stick)
+                model?.changedContacts(inputs, press: !d.stick)
             }
         }
         setNeedsDisplay()
@@ -140,7 +148,7 @@ struct TouchSurface: UIViewRepresentable {
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches { if let token = touchIDs[ObjectIdentifier(touch)] { move(touch, token: token) } }
-        if !editing { model?.changed(inputs.state, immediate: false) }
+        if !editing { model?.changedContacts(inputs, immediate: false) }
         setNeedsDisplay()
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) { end(touches) }
@@ -149,7 +157,7 @@ struct TouchSurface: UIViewRepresentable {
         for touch in touches {
             if let token = touchIDs.removeValue(forKey: ObjectIdentifier(touch)) { inputs.end(token); origins[token] = nil }
         }
-        if editing { save() } else { model?.changed(inputs.state) }
+        if editing { save() } else { model?.changedContacts(inputs) }
         setNeedsDisplay()
     }
     override func didMoveToWindow() {
