@@ -9,7 +9,7 @@ if errorlevel 1 (
     exit /b 1
 )
 set VGAMEPAD_SKIP_VIGEMBUS_INSTALL=true
-".venv\Scripts\python.exe" -m pip install -r requirements.txt
+".venv\Scripts\python.exe" scripts\install_windows_dependencies.py
 if errorlevel 1 (
     pause
     exit /b 1

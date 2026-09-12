@@ -44,6 +44,8 @@ struct ContentView: View {
             }.font(.subheadline)
             if !model.connected && !model.editing {
                 VStack(spacing: 8) {
+                    Text("Requires the Windows companion on the same Wi-Fi.").font(.caption)
+                    Link("Get the Windows companion", destination: URL(string: "https://serenity091.github.io/IControl/support/")!).font(.caption)
                     TextField("Player name", text: $name).textContentType(.nickname).accessibilityIdentifier("playerName")
                     SecureField("Pairing URL: http://host:port/play#key=…", text: $url)
                         .textContentType(.none).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
@@ -97,11 +99,11 @@ struct SettingsView: View {
                 Toggle("Motion", isOn: $model.motionEnabled).disabled(!model.motionAvailable)
                 Text(model.motionMessage)
                 Text(motion.status)
-                Text(model.subscribers > 0 ? "DSU client subscribed · verify motion in Eden" : "No DSU client subscribed yet")
+                Text(model.subscribers > 0 ? "Motion client connected" : "No motion client connected yet")
                 Text("Motion sensitivity: \(sensitivity, specifier: "%.2f")×")
                 Slider(value: $sensitivity, in: 0.25...3).onChange(of: sensitivity) { _, value in motion.sensitivity = value }
-                Button("Calibrate gyro bias / recenter") { motion.calibrate() }.disabled(!model.motionEnabled || !model.motionAvailable)
-                Text("Keep the phone still for one second. This removes rotation-rate bias; use Eden to recenter game aim. One phone supplies one motion source.").font(.caption)
+                Button("Calibrate motion") { motion.calibrate() }.disabled(!model.motionEnabled || !model.motionAvailable)
+                Text("Keep the phone still for one second. This removes rotation-rate bias; use your game to recenter aim. One phone supplies one motion source.").font(.caption)
                 Button("Open app Settings") { if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) } }
                 Section("About Phone Controller") {
                     NavigationLink("Setup and support") { AppInformationView(privacy: false) }

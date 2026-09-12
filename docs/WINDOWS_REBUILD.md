@@ -94,3 +94,8 @@ Record Windows build, ViGEmBus version, Eden version, game, phone/iOS versions,
 axis directions and chosen sensitivity in [IOS_VALIDATION.md](IOS_VALIDATION.md).
 Windows packaging, live XInput and actual Eden motion remain Windows-side checks;
 Mac preview and simulator results cannot establish those outcomes.
+
+The dependency installer verifies the pinned vgamepad source archive and suppresses
+only its setup-time MSI launch before installing it. Upstream 0.1.0 ignores the
+old skip-install environment variable. Runtime code is unchanged; ViGEmBus remains
+a separate user installation. This also permits unattended GitHub Windows builds.

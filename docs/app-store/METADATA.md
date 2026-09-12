@@ -6,7 +6,9 @@ Registered bundle ID (owner confirmed): **`com.jakejin.IControl`**
 
 Subtitle: **Wireless PC Gamepad & Motion**
 
-Suggested primary category: **Utilities**. Confirm in App Store Connect.
+Primary category: **Utilities**.
+
+Price: **Free** (owner confirmed).
 
 Keywords (under 100 characters):
 `gamepad,wireless,pc,remote,joystick,motion,gyro,wifi,multiplayer,controller`
@@ -23,7 +25,7 @@ ViGEmBus virtual controller driver on your PC. Install them before playing.
 This app does not connect directly to a game console and does not include games.
 
 CUSTOMIZE YOUR CONTROLS
-Use a full two-stick controller or a standalone left or right Joy-Con layout.
+Use a full two-stick controller or left- or right-hand single-stick layouts.
 Move and resize buttons, with separate saved layouts for portrait, landscape and
 upright or sideways holding. Use independent touches for sticks and buttons.
 
@@ -54,11 +56,10 @@ not provide IR, NFC, Nintendo HD rumble or absolute positional tracking.
 ## Reviewer notes — complete before submission
 
 No login or subscription is required. Live controls require a Windows PC on the
-same trusted local network. Provide the following real resources before review:
+same trusted local network. Companion download and setup resources:
 
-- Windows companion download: **OWNER TO SUPPLY**
-- Setup/support URL and monitored contact: **OWNER TO SUPPLY**
-- Optional demonstration recording: **OWNER TO SUPPLY**
+- Windows companion download: https://github.com/serenity091/IControl/releases/tag/windows-v1.0.0-rc.1
+- Setup/support URL: https://serenity091.github.io/IControl/support/ (GitHub Issues support)
 
 Install the companion and ViGEmBus, allow private-network access and keep the
 companion running. On the iPhone, tap Scan QR and scan the companion's current
@@ -74,7 +75,8 @@ policy. Camera permission is optional because pairing URLs may be pasted.
 
 ## Fields not yet completed
 
-SKU, publisher/copyright, public support and privacy URLs,
-review contact name/email/phone, price/territories, age-rating questionnaire,
-privacy confirmation, screenshots and uploaded build selection. Do not submit
-this draft with OWNER TO SUPPLY fields. The owner reports the App Store Connect record has already been created.
+Public privacy URL: https://serenity091.github.io/IControl/privacy/
+
+Copyright: 2026 Jake Jin. Reviewer contact details were supplied privately and
+are entered only in App Store Connect. Complete age rating, app privacy,
+territories and build selection in the store workflow.
