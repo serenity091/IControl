@@ -1,4 +1,8 @@
-# IControl
+# Phone Controller
+
+Previously named IControl. Windows packaging now produces **Phone Controller.exe**.
+See the [Windows rebuild handoff](docs/WINDOWS_REBUILD.md) and
+[iOS App Store release preparation](docs/APP_STORE_RELEASE.md).
 
 **Next iOS feature:** [Joy-Con implementation task](docs/JOYCON_TASK.md) and
 [Mac handoff](docs/JOYCON_HANDOFF.md). These describe requested work; Joy-Con mode
@@ -18,16 +22,16 @@ Pair setup is included.
 
 ## Open and play
 
-Double-click **dist/IControl.exe**. This is a standalone Windows application: Python and the website are bundled inside the EXE. No console or separate browser window is needed. The native window starts the local server and shows a QR code.
+Double-click **dist/Phone Controller.exe**. This is a standalone Windows application: Python and the website are bundled inside the EXE. No console or separate browser window is needed. The native window starts the local server and shows a QR code.
 
-1. Keep the IControl window open.
+1. Keep the Phone Controller window open.
 2. Connect your phone to the same Wi-Fi as the PC and scan the QR code.
 3. Enter a name and tap **Join game**. A virtual Xbox controller appears in Windows for each connected phone.
 4. In Eden, enable the player, choose Pro Controller, and select that phone's Xbox / XInput device. Bind buttons and save your profile.
 
-**Close the IControl window to stop the server and remove all its controllers.** Minimizing keeps it running. The optional browser dashboard does not own the server; closing a browser tab does not stop the desktop app. Opening a second app while the first is running displays a port-in-use error and leaves the first app alone.
+**Close the Phone Controller window to stop the server and remove all its controllers.** Minimizing keeps it running. The optional browser dashboard does not own the server; closing a browser tab does not stop the desktop app. Opening a second app while the first is running displays a port-in-use error and leaves the first app alone.
 
-The executable is at `dist/IControl.exe` after building; generated EXEs are not included in the source repository. You can move that single file elsewhere. The shared **ViGEmBus driver** is still required on each Windows PC; install it from [the official releases](https://github.com/nefarius/ViGEmBus/releases) first. The executable does not silently install a driver.
+The executable is at `dist/Phone Controller.exe` after building; generated EXEs are not included in the source repository. You can move that single file elsewhere. The shared **ViGEmBus driver** is still required on each Windows PC; install it from [the official releases](https://github.com/nefarius/ViGEmBus/releases) first. The executable does not silently install a driver.
 
 ## Players
 
@@ -58,13 +62,13 @@ The phone controller blocks double-tap and pinch zoom while preserving simultane
 
 The server listens on TCP 8080. If phones cannot connect, **Enable Wi-Fi access.cmd** requests administrator approval for a private-network, local-subnet firewall rule. Keep `enable-wifi.ps1` beside that launcher; Python is not required for this firewall helper. Use the PC's Wi-Fi address in the address selector. Guest-network isolation or VPNs may prevent local connections.
 
-If the iOS app repeatedly reports “Network stalled” on Windows while it connects to a Mac preview server, run **Enable Wi-Fi access.cmd** again. Dismissing the Windows firewall prompt can create an explicit EXE block that overrides the port allowance. The helper repairs generated private-network TCP blocks for `IControl.exe` in its own folder or `dist/`; public-network blocks remain intact. Scan this Windows server's QR inside the iOS app. A phone cannot access the localhost-only host dashboard; `/play` is the phone page.
+If the iOS app repeatedly reports “Network stalled” on Windows while it connects to a Mac preview server, run **Enable Wi-Fi access.cmd** again. Dismissing the Windows firewall prompt can create an explicit EXE block that overrides the port allowance. The helper repairs generated private-network TCP blocks for `Phone Controller.exe` in its own folder or `dist/`; public-network blocks remain intact. Scan this Windows server's QR inside the iOS app. A phone cannot access the localhost-only host dashboard; `/play` is the phone page.
 
 Everything works locally after installation, without accounts or internet assets. Pairing links have a random secret regenerated on each launch. HTTP traffic is unencrypted; use a trusted local network and do not forward the port to the internet. Host controls are restricted to localhost.
 
 ## Build and development
 
-Python 3.12 is used for development. Run **Setup IControl.cmd** to install dependencies, then **Build IControl.cmd** to produce the EXE with PyInstaller. Packaging follows [PyInstaller's bundled resource rules](https://www.pyinstaller.org/en/stable/runtime-information.html).
+Python 3.12 is used for development. Run **Setup Phone Controller.cmd** to install dependencies, then **Build Phone Controller.cmd** to produce the EXE with PyInstaller. Packaging follows [PyInstaller's bundled resource rules](https://www.pyinstaller.org/en/stable/runtime-information.html).
 
 ```powershell
 .\.venv\Scripts\python.exe desktop.py

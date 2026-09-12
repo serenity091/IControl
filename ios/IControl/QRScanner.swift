@@ -9,7 +9,7 @@ struct QRScanner: UIViewControllerRepresentable {
 }
 final class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     private let session = AVCaptureSession()
-    private let queue = DispatchQueue(label: "IControl.camera")
+    private let queue = DispatchQueue(label: "Phone Controller.camera")
     private var preview: AVCaptureVideoPreviewLayer?
     private var scanned: (String) -> Void
     private var visible = false
@@ -20,7 +20,7 @@ final class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsD
     override func viewDidLoad() {
         super.viewDidLoad(); view.backgroundColor = .black
         message.textColor = .white; message.numberOfLines = 0; message.textAlignment = .center
-        message.text = "Allow camera access to scan the IControl QR. You can also paste the pairing URL."
+        message.text = "Allow camera access to scan the Phone Controller QR. You can also paste the pairing URL."
         view.addSubview(message)
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -29,7 +29,7 @@ final class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsD
             DispatchQueue.main.async {
                 guard let self, self.visible else { return }
                 if allowed { self.configure() }
-                else { self.message.text = "Camera access denied. Enable Camera for IControl in Settings, or close this scanner and paste the pairing URL." }
+                else { self.message.text = "Camera access denied. Enable Camera for Phone Controller in Settings, or close this scanner and paste the pairing URL." }
             }
         }
     }
@@ -46,7 +46,7 @@ final class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsD
         session.addOutput(output); output.setMetadataObjectsDelegate(self, queue: .main); output.metadataObjectTypes = [.qr]
         let preview = AVCaptureVideoPreviewLayer(session: session); preview.videoGravity = .resizeAspectFill
         self.preview = preview; view.layer.insertSublayer(preview, at: 0); view.setNeedsLayout()
-        message.text = "Point at the QR in the IControl window"
+        message.text = "Point at the QR in the Phone Controller window"
         queue.async { [session] in session.startRunning() }
     }
     override func viewDidLayoutSubviews() {
@@ -60,7 +60,7 @@ final class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsD
     }
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard visible, !delivered, let value = (metadataObjects.first as? AVMetadataMachineReadableCodeObject)?.stringValue else { return }
-        guard (try? Pairing(value)) != nil else { message.text = "This QR is not an IControl pairing URL."; return }
+        guard (try? Pairing(value)) != nil else { message.text = "This QR is not a Phone Controller pairing URL."; return }
         delivered = true; stop(); scanned(value)
     }
 }

@@ -1,4 +1,4 @@
-"""IControl: a local, four-player phone-to-XInput bridge."""
+"""Phone Controller: a local, four-player phone-to-XInput bridge."""
 import argparse
 import asyncio
 import contextlib
@@ -64,7 +64,7 @@ class Output:
                 import vgamepad as vg
                 self.vg = vg
             except Exception as exc:
-                self.error = f"Virtual controllers unavailable: {exc}. Install ViGEmBus and restart IControl."
+                self.error = f"Virtual controllers unavailable: {exc}. Install ViGEmBus and restart Phone Controller."
                 self.pads.clear()
 
     def attach(self, index):
@@ -153,7 +153,8 @@ class Hub:
 
     def status(self):
         return {
-            "app": "IControl",
+            "app": "IControl",  # Stable discovery identity for older clients.
+            "displayName": "Phone Controller",
             "instance": self.instance,
             "controllerCount": len(self.output.pads),
             "maxPlayers": 4,
@@ -396,7 +397,7 @@ def create_app(hub, stop_callback=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="IControl local phone controllers")
+    parser = argparse.ArgumentParser(description="Phone Controller local phone controllers")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--simulate", action="store_true", help="Preview without virtual controller output")
     parser.add_argument("--open", action="store_true", help="Open the laptop dashboard")
@@ -419,10 +420,10 @@ if __name__ == "__main__":
                 running = False
             if running and args.open:
                 webbrowser.open(f"http://localhost:{args.port}")
-                parser.exit(message="IControl is already running. Opened its dashboard.\n")
+                parser.exit(message="Phone Controller is already running. Opened its dashboard.\n")
             parser.exit(1, f"Port {args.port} is already in use. Stop that server or choose --port.\n")
     hub = Hub(args.port, args.simulate, dsu_port=None if args.no_motion else args.dsu_port)
-    print(f"IControl dashboard: http://localhost:{args.port}")
+    print(f"Phone Controller dashboard: http://localhost:{args.port}")
     print(hub.output.error or ("PREVIEW ONLY: no controller output" if args.simulate else "Ready. Virtual controllers are created as phones join (up to four)."))
     if args.open:
         import threading

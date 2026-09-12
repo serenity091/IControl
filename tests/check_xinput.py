@@ -1,4 +1,4 @@
-r"""Manual Windows end-to-end check against a running, idle IControl server.
+r"""Manual Windows end-to-end check against a running, idle Phone Controller server.
 
 Run: .venv\Scripts\python.exe tests\check_xinput.py
 This presses test inputs on virtual controllers briefly. Do not run during a game.

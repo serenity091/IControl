@@ -1,17 +1,28 @@
-# Windows rebuild and Eden handoff
+# Phone Controller — Windows rebuild handoff
 
-**Standalone Joy-Con update:** no Windows rebuild is needed for the new iOS
-Left/Right modes. The current EXE including `ff06a6e` accepts every carrier output
-and motion frame. Keep the recent Windows fixes, update the phone app, and follow
-[JOYCON_SETUP.md](JOYCON_SETUP.md) to bind a single half in Eden. Two-phone pair
-setup is outside this update. The commands below remain the general EXE rebuild
-procedure for server changes.
+**Rebuild required for the rename.** Close any running IControl or Phone Controller
+window, then build from the shared **codex/native-ios-motion** branch. The output
+is now `dist/Phone Controller.exe`; old `dist/IControl.exe` builds may remain in
+an existing checkout but are no longer launched by the renamed Start script.
+Remove or archive that old executable manually once the new build is working.
+Update desktop shortcuts to the new EXE. The source changes have been prepared
+on macOS; a Windows EXE has not been built or validated on this Mac.
 
+The desktop title, dashboard, phone browser, error messages and Setup/Build/Start/
+Stop launchers use **Phone Controller**. Keep filenames with spaces quoted.
+The icon is now `assets/phone-controller.ico`. PyInstaller's one-file build still
+bundles the local website and motion bridge. Run **Enable Wi-Fi access.cmd** if
+Windows blocks the new executable. The helper recognizes both new and old EXE
+paths and updates the existing rule's display name, retaining its stable internal
+name and the previous private-network-only repair scope.
 
-Branch: **codex/native-ios-motion**. Use the final commit reported with this
-handoff. Changes to `server.py`, `desktop.py`, `motion.py`, and
-`static/dashboard.js` must all reach Windows; the old EXE cannot receive motion.
-The checked-in Xcode app is under `ios/` and is built on the Mac.
+No new wire IDs, ports or motion behavior are required on Windows. The stable
+`app: "IControl"` discovery marker and existing browser/iOS storage keys are
+preserved; status now additionally reports `displayName: "Phone Controller"`.
+Existing iOS clients and older motion-capable EXEs remain protocol-compatible.
+The previous Windows fixes, including `ff06a6e`, remain in place. Standalone
+Left/Right Joy-Con setup is documented in [JOYCON_SETUP.md](JOYCON_SETUP.md);
+no two-phone pairing setup is included.
 
 If the branch has been pushed to origin, on Windows:
 
@@ -33,11 +44,9 @@ git switch -c codex/native-ios-motion FETCH_HEAD
 Close the running EXE before rebuilding. Keep ViGEmBus installed. From the repo:
 
 ```powershell
-& ".\Setup IControl.cmd"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-node --test tests/controller.test.cjs
-& ".\Build IControl.cmd"
-.\dist\IControl.exe
+& ".\Setup Phone Controller.cmd"
+& ".\Build Phone Controller.cmd"
+& ".\dist\Phone Controller.exe"
 ```
 
 `build_exe.py` imports `desktop.py` → `server.py` → `motion.py`; PyInstaller follows
@@ -45,7 +54,11 @@ that normal Python import, so the new bridge is bundled. There are no new Python
 runtime dependencies. Regenerate the spec through the build script; never copy
 a Mac-generated spec or virtual environment. UDP defaults to loopback 26760;
 a conflict disables motion and displays its error while buttons continue working.
-You can run `IControl.exe --dsu-port 26761` or `--no-motion` when needed.
+You can run `"Phone Controller.exe" --dsu-port 26761` or `--no-motion` when needed.
+
+The user requested no further tests during this handoff. The following checks
+are documented for a later Windows release validation; they have not been run
+as part of the rename.
 
 With an idle **live** server and no other phones/physical XInput pads, run:
 
@@ -73,7 +86,7 @@ For motion, follow [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md): Eden's Cemuhook/DSU
 server is `127.0.0.1:26760`, P1–P4 correspond to slots 0–3, and XInput remains the
 button/stick source. Enable phone motion, calibrate, then bind motion in Eden.
 Test pitch/yaw/roll, portrait/both landscape orientations, stationary drift,
-sensitivity, real gameplay and per-player isolation with two moving phones.
+sensitivity and real standalone gameplay with one phone.
 Confirm background/screen lock/network loss stop motion. A subscription indicator
 or a passing packet test is not a substitute for this emulator check.
 

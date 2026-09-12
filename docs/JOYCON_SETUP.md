@@ -5,15 +5,16 @@ its existing **Full controller** mode. This implements standalone use only. The
 user explicitly excluded a two-phone Joy-Con Pair setup; no pairing workflow,
 slot merging, or two-phone configuration is implemented or documented here.
 
-The current Windows EXE from `ff06a6e` is compatible. **Only the iOS app needs
-updating for this feature**; there are no changes to the server protocol, virtual
+The older Windows EXE from `ff06a6e` remains protocol-compatible with Joy-Con
+input. Rebuild Windows for the **Phone Controller** branding as described in
+[WINDOWS_REBUILD.md](WINDOWS_REBUILD.md); there are no changes to the server protocol, virtual
 controller output, DSU bridge, firewall rules, or Windows packaging. Keep the
 recent Windows UDP shutdown and departed-subscriber fixes.
 
 ## iPhone setup
 
 1. Install the updated iOS build using [ios/README.md](../ios/README.md). Scan the
-   running Windows IControl QR from inside the app and tap Join game, or paste
+   running Windows Phone Controller QR from inside the app and tap Join game, or paste
    the complete pairing URL. Use the newest QR after a server restart.
 2. Use the **Controller** menu above the touch surface to choose Full controller,
    Left Joy-Con, or Right Joy-Con. Joy-Con modes show an **Upright / Sideways**
@@ -84,7 +85,7 @@ Windows validation used **Eden v0.2.1**, but actual Joy-Con gameplay has **not**
 verified on that Windows build. Menu placement may vary; unsupported games may
 reject a standalone controller even when inputs are bound correctly.
 
-1. Start the existing Windows IControl EXE and join the phone. Note its IControl
+1. Start the existing Windows Phone Controller EXE and join the phone. Note its Phone Controller
    source slot (P1–P4). In Eden, open **Emulation → Configure → Controls** and
    enable the intended player. Choose **Joycon Left** or **Joycon Right** as that
    player's controller type, matching the app.
@@ -96,8 +97,8 @@ reject a standalone controller even when inputs are bound correctly.
    controls, they are different from the visible R/ZR controls.
 3. Bind the half's **Left Stick** or **Right Stick** directions while the app is
    Upright: push up/right/down/left on screen for the corresponding Eden binding.
-   Save a dedicated profile such as `IControl Left standalone` or
-   `IControl Right standalone`. Check that all unused controls are unbound.
+   Save a dedicated profile such as `Phone Controller Left standalone` or
+   `Phone Controller Right standalone`. Check that all unused controls are unbound.
 4. You may now choose Sideways in the app without rebinding. Stick movement is
    transformed once back into the upright hardware frame, matching the rotated
    button identities. Do not add another rotation/inversion in Eden on top of
@@ -110,7 +111,7 @@ reject a standalone controller even when inputs are bound correctly.
    source as well as the Xbox source. Bind **Motion 1** for Joycon Left or
    **Motion 2** for Joycon Right by moving this phone. Those are Eden motion-field
    names, **not** the DSU slot number. Confirm that the saved binding uses the
-   phone's DSU pad: IControl P1 → pad 0, P2 → 1, P3 → 2, P4 → 3. Restore neither
+   phone's DSU pad: Phone Controller P1 → pad 0, P2 → 1, P3 → 2, P4 → 3. Restore neither
    auto-map nor a different device preset after manual binding, as it may replace
    these settings. Save the profile.
 7. Test a game that supports a standalone half. Verify movement, face/directional
@@ -132,7 +133,7 @@ in the app is not a promise that every game supports one-handed vertical play.
 | Eden hardware stick Down | Right | Left |
 | Eden hardware stick Left | Down | Up |
 
-For example, a lone Right Joy-Con phone in **IControl P1** still uses its Xbox
+For example, a lone Right Joy-Con phone in **Phone Controller P1** still uses its Xbox
 **right stick**, and **DSU pad 0** is bound to Eden **Motion 2**. Slot numbers
 identify phone sources. Every connected phone consumes one of the existing four
 slots; this feature does not increase that limit or create extra virtual devices.

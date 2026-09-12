@@ -20,3 +20,6 @@ xcuserdata/
 *.xcresult
 *.cer
 *.p8
+
+*.xcarchive/
+*.ipa

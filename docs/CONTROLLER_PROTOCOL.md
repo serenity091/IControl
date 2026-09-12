@@ -79,3 +79,12 @@ A disconnected phone reserves its player number for 15 seconds, but its virtual 
 `/`, `/api/bootstrap`, `/api/status`, `/api/qr`, `/api/stop`, and `/api/players/N/release` are localhost-only admin endpoints. A phone must not try to fetch bootstrap for its key or require an admin token. The phone uses the scanned QR and `/ws` only.
 
 Haptics are generated locally by the native app, without a haptic command. Motion uses the versioned optional `input.motion` field and advertised `joined.capabilities.motion`, with DSU output alongside XInput. See [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md). Xbox output itself still has no gyro field.
+
+
+### Phone Controller branding compatibility
+
+Phone Controller retains `app: "IControl"` in host status as the stable discovery
+identifier and adds `displayName: "Phone Controller"`. Clients must not use the
+visible name as a new protocol version. Native pings send `time: 0` because they
+use pong arrival for liveness and do not display round-trip latency; the browser
+continues to use its echoed time for latency. Packet shapes and behavior are unchanged.

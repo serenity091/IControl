@@ -41,3 +41,8 @@ html:has(.phone){overscroll-behavior:none}
 .join-card .field-label{color:#555;letter-spacing:0;font-size:11px}
 .phone .tiny{color:#666}
 @media(max-height:480px){.phone-bar{height:42px}.phone-footer{height:20px}.join-card .field-label{grid-row:1}.join-card h1{grid-row:1}.join-card .subtle{grid-row:2 / span 2}.join-card input{grid-row:2}.join-card .primary-button{grid-row:3}}
+
+/* The full product name wraps within the header on narrow phones. */
+.phone .brand{min-width:0;flex-shrink:1;line-height:1.1}
+.phone .brand-icon{flex-shrink:0}
+@media(max-width:430px){.phone-bar{gap:6px;padding:0 8px}.phone .brand{font-size:12px;max-width:115px}.phone-connection{gap:4px;font-size:10px}.phone-actions{gap:4px}.phone .small-button{padding:6px 7px}}

@@ -1,0 +1,24 @@
+Phone Controller — Privacy Policy
+Last updated: September 12, 2026
+
+Phone Controller turns your iPhone into a controller for a computer you choose. The app has no developer-operated account service, advertising, analytics or tracking SDKs. We do not receive your controller sessions on our servers.
+
+Information on your iPhone
+The app stores your chosen player name, a random installation identifier, controller mode, saved layouts and haptic preferences in its own local settings. The identifier helps your computer recognize a reconnecting phone; it is not an advertising identifier. Your device's backup settings may include app preferences.
+
+Information sent to your computer
+When you join a session, the app sends your player name, installation identifier, pairing key, button and stick inputs, and connection messages to the computer in the pairing URL. If you enable Motion, it also sends acceleration, rotation rates, sample sequence numbers and elapsed sample times. Your computer can see your phone's network address. The Windows companion uses this information to provide virtual controller input and optional motion output to compatible software. Its local dashboard displays player names, connection status and current input state.
+
+The bundled companion keeps session data in memory, including a short reservation after disconnect to allow reconnection. Closing the companion clears that session data. The companion does not upload sessions to us. Games, emulators or other software you choose to connect may have their own data practices.
+
+Camera and motion
+Camera access is optional and used only to read a pairing QR code. Camera images are not saved or sent to the computer or to us. Manual URL entry works without camera access. Motion is off until you enable it and stops when the app leaves the foreground or disconnects. Motion controls are not health or fitness tracking.
+
+Pairing and network security
+Pairing keys remain in the native app's memory and are not saved to app preferences. Local controller traffic is unencrypted, so use a trusted private Wi-Fi network and only pair with a computer you trust. The app communicates with the address you supply; check the destination before joining. Do not share your pairing QR or full pairing URL publicly.
+
+Your choices
+You can disconnect, turn off motion or haptics, reset the active layout, and revoke Camera or Local Network access in iOS Settings. Deleting the app (rather than offloading it) removes its local settings from that installation. Close the Windows companion to clear its in-memory sessions. Manage any device backups separately through your backup settings.
+
+Support and changes
+For questions, use the developer contact on the App Store support page for Phone Controller. If you choose to contact support, the information you send is used to handle your request. Do not send pairing keys. This policy will be updated when the app's data practices change.

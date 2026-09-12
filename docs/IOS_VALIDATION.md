@@ -203,3 +203,31 @@ planned as part of this change.
 The final signed Release build succeeded and was installed on the iPhone 16 Pro
 Max. Installation is not an additional interaction or gameplay test. No further
 tests were run after the stop request.
+
+
+## Phone Controller rename and App Store preparation — 2026-09-12
+
+The owner confirmed **`com.jakejin.IControl`** as the existing App Store Connect
+bundle ID. The shared project now defaults to that exact ID and displays
+**Phone Controller**, version **1.0 (2)**. The previously installed development
+ID `com.jakejin.icontrol.companion` is a different app; it was not removed.
+
+The final signed Release archive and local App Store distribution IPA export
+succeeded using Xcode 26.0.1 / iOS 26 SDK. Archive inspection confirmed the name,
+registered bundle ID, version/build, bundled privacy policy and privacy manifest.
+The existing 1024 × 1024 app icon is opaque. Static syntax inspection of the
+changed Python files and archive shell script completed without errors.
+
+No tests, simulator interaction or physical-device runs were performed, in
+accordance with the user's no-tests instruction. In particular, the new support/
+privacy screens and longer branding have not received runtime visual acceptance.
+The native ping now uses a constant echo field and sensor timestamps are relative
+to the first usable sample rather than device boot; these privacy changes compiled
+but were not exercised in a new transport test. Protocol formats remain unchanged.
+
+The Windows EXE was not built on macOS. Windows must pull this revision and run
+**Build Phone Controller.cmd** to produce **dist/Phone Controller.exe**. See
+[WINDOWS_REBUILD.md](WINDOWS_REBUILD.md) for updated launchers, firewall upgrade
+behavior and later Windows validation. App Store public URLs, screenshots and
+review metadata still need completion; no upload or submission was performed.
+See [APP_STORE_RELEASE.md](APP_STORE_RELEASE.md) for the artifacts and release steps.

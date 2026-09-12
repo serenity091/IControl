@@ -208,7 +208,7 @@ import CoreHaptics
             status = "Player \(player) · \(message["mode"] as? String == "preview" ? "Preview only" : "Connected")"
             let capability = (message["capabilities"] as? [String: Any])?["motion"] as? [String: Any]
             motionAvailable = capability?["version"] as? Int == 1 && capability?["available"] as? Bool == true
-            motionMessage = motionAvailable ? "DSU bridge ready" : capability?["error"] as? String ?? "Motion requires a newer IControl server"
+            motionMessage = motionAvailable ? "DSU bridge ready" : capability?["error"] as? String ?? "Motion requires a newer Phone Controller server"
             gate.reset(epoch: epoch); clear(); UIApplication.shared.isIdleTimerDisabled = true
         case "reset":
             guard let epoch = message["epoch"] as? Int, epoch >= gate.epoch else { return }
@@ -235,7 +235,8 @@ import CoreHaptics
         let ping = gate.accepting && now - lastPing >= 2
         guard mustClear || dirty || now - lastSent >= 0.18 || sample != nil || ping else { return }
         var object: [String: Any]
-        if ping { object = ["type":"ping", "time":now]; lastPing = now }
+        // The server echoes this field; native liveness does not need a boot-time value.
+        if ping { object = ["type":"ping", "time":0]; lastPing = now }
         else {
             let sentState = mustClear || editing ? InputState.neutral : state
             guard let stateData = try? JSONEncoder().encode(sentState),

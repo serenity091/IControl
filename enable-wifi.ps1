@@ -1,13 +1,18 @@
 $ErrorActionPreference = 'Stop'
+# Retain the installed rule identity so upgrading does not create duplicate rules.
 $ruleName = 'IControl-Local-WiFi-8080'
 if (-not (Get-NetFirewallRule -Name $ruleName -ErrorAction SilentlyContinue)) {
-    New-NetFirewallRule -Name $ruleName -DisplayName 'IControl local Wi-Fi controllers' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8080 -Profile Private -RemoteAddress LocalSubnet
+    New-NetFirewallRule -Name $ruleName -DisplayName 'Phone Controller local Wi-Fi controllers' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8080 -Profile Private -RemoteAddress LocalSubnet
+} else {
+    Set-NetFirewallRule -Name $ruleName -DisplayName 'Phone Controller local Wi-Fi controllers'
 }
 
 # Dismissing Windows' first-run firewall prompt can create a program block that
 # overrides the port allowance. Repair only generated private TCP blocks for
-# this copy of IControl; leave public-network and unrelated application rules alone.
+# this copy of Phone Controller; leave public-network and unrelated application rules alone.
 $appPaths = @(
+    [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'dist\Phone Controller.exe')),
+    [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'Phone Controller.exe')),
     [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'dist\IControl.exe')),
     [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'IControl.exe'))
 )

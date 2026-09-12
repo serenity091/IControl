@@ -29,6 +29,10 @@ Motion is optional on each full input frame:
 - `v`: integer 1. `seq` and `timestamp`: nonnegative integers <= 2^53−1.
 - `seq` increases for every newly acquired sensor sample; `timestamp` is Core
   Motion monotonic acquisition time in **microseconds**, not wall clock time.
+  Phone Controller iOS builds use elapsed time since the first usable sensor
+  sample of that app process; the origin survives mode changes and reconnects.
+  Older clients use time since boot. The server only compares ordering/deltas,
+  so both representations remain compatible.
 - Both must increase within one connection. Duplicates/out-of-order samples do
   not replace or refresh motion. The last accepted sample expires independently.
 - `accel`: exactly three finite numbers, **g**, each within ±16, including gravity.

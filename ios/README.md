@@ -1,9 +1,14 @@
-# IControl native iPhone companion
+# Phone Controller native iPhone companion
 
 Open `ios/IControl.xcodeproj`. This is a SwiftUI app with a UIKit multi-touch
 surface, AVFoundation QR scanner, native haptics and optional Core Motion. It
 uses the existing gray/black Xbox layout and speaks the existing LAN protocol.
 There are no package dependencies, accounts, analytics or cloud runtime services.
+
+App Store preparation, archive/export commands, metadata and remaining release
+requirements are in [APP_STORE_RELEASE.md](../docs/APP_STORE_RELEASE.md). The visible
+app name and product are **Phone Controller**; the Xcode project, module, bundle-ID
+setting and saved preference keys retain their internal names for compatibility.
 
 ## Build and install
 
@@ -20,12 +25,14 @@ open ios/IControl.xcodeproj
 1. In Xcode Settings → Accounts, sign in with your Apple Account if needed.
 2. Select target **IControl** → Signing & Capabilities → your development Team.
    Leave **Automatically manage signing** enabled. Set the **ICONTROL_BUNDLE_ID**
-   build setting to your unique identifier (for example
-   `com.yourname.icontrol.companion`). Tests derive a `.tests` identifier from it.
+   build setting to **`com.jakejin.IControl`**, the registered App Store Connect
+   identifier confirmed by the owner (now the project default). Tests derive a
+   `.tests` identifier from it. Use a different ID only for an intentional separate
+   development install.
 3. Connect/unlock the iPhone, accept Trust prompts, and enable Developer Mode
    when requested. Select that iPhone as the run destination, then Product → Run.
 4. Allow Camera when scanning and Local Network when connecting. In the app,
-   Scan QR from the running IControl dashboard, then Join game. Alternatively
+   Scan QR from the running Phone Controller dashboard, then Join game. Alternatively
    paste the complete `http://host:port/play#key=…` URL. System Camera scanning
    still opens the browser client; it is not a native deep link.
 5. For permissions denied earlier, Settings → Open app Settings provides a
@@ -47,12 +54,12 @@ Signed device build using your local team and identifier:
 xcodebuild -project ios/IControl.xcodeproj -scheme IControl \
   -destination 'generic/platform=iOS' -configuration Debug \
   -derivedDataPath /tmp/icontrol-device \
-  DEVELOPMENT_TEAM=YOUR_TEAM_ID ICONTROL_BUNDLE_ID=com.yourname.icontrol.companion \
+  DEVELOPMENT_TEAM=YOUR_TEAM_ID ICONTROL_BUNDLE_ID=com.jakejin.IControl \
   -allowProvisioningUpdates build
 xcrun devicectl list devices
 xcrun devicectl device install app --device YOUR_DEVICE_ID \
-  /tmp/icontrol-device/Build/Products/Debug-iphoneos/IControl.app
-xcrun devicectl device process launch --device YOUR_DEVICE_ID com.yourname.icontrol.companion
+  "/tmp/icontrol-device/Build/Products/Debug-iphoneos/Phone Controller.app"
+xcrun devicectl device process launch --device YOUR_DEVICE_ID com.jakejin.IControl
 ```
 
 No team ID, certificate, provisioning profile or pairing token is stored in this

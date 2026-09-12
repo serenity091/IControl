@@ -24,7 +24,7 @@ class ServerThread:
         self.loop = None
         self.stop_event = None
         self.stop_requested = threading.Event()
-        self.thread = threading.Thread(target=self.run, name="IControl server", daemon=False)
+        self.thread = threading.Thread(target=self.run, name="Phone Controller server", daemon=False)
 
     def start(self):
         self.thread.start()
@@ -84,12 +84,12 @@ class Desktop:
         self.server = ServerThread(port, simulate, dsu_port)
         self.scale = root.winfo_fpixels("1i") / 96
         self.qr_size = round(240 * self.scale)
-        root.title("IControl")
+        root.title("Phone Controller")
         root.geometry(f"{round(760*self.scale)}x{round(620*self.scale)}")
         root.minsize(round(720*self.scale), round(600*self.scale))
         root.configure(bg="#ededed")
         root.protocol("WM_DELETE_WINDOW", self.close)
-        icon = Path(__file__).parent / "assets" / "icontrol.ico"
+        icon = Path(__file__).parent / "assets" / "phone-controller.ico"
         if icon.exists():
             root.iconbitmap(str(icon))
         style = ttk.Style(root)
@@ -98,7 +98,7 @@ class Desktop:
         style.configure("TCombobox", padding=5)
         header = tk.Frame(root, bg="#252525", padx=24, pady=17)
         header.pack(fill="x")
-        tk.Label(header, text="IControl", font=("Segoe UI", 21, "bold"), bg="#252525", fg="white").pack(side="left")
+        tk.Label(header, text="Phone Controller", font=("Segoe UI", 21, "bold"), bg="#252525", fg="white").pack(side="left")
         self.status = tk.Label(header, text="Starting server…", bg="#252525", fg="#aadd83", font=("Segoe UI", 10))
         self.status.pack(side="right")
         body = tk.Frame(root, bg="#ededed", padx=24, pady=20)
@@ -182,7 +182,7 @@ class Desktop:
                 elif kind == "error":
                     self.failed = True
                     self.status.configure(text="Could not start", fg="#ffaaaa")
-                    self.hint.configure(text=f"{value}\n\nPort {self.port} may already be in use. Close the other IControl window or stop the old server, then open this app again.", wraplength=310)
+                    self.hint.configure(text=f"{value}\n\nPort {self.port} may already be in use. Close the other Phone Controller window or stop the old server, then open this app again.", wraplength=310)
                 elif kind == "stopped" and not self.failed:
                     self.closing = True
         except queue.Empty:

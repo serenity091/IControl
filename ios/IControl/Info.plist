@@ -2,17 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
 <key>CFBundleDevelopmentRegion</key><string>en</string>
-<key>CFBundleDisplayName</key><string>IControl</string>
+<key>CFBundleDisplayName</key><string>Phone Controller</string>
 <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
 <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-<key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
+<key>CFBundleName</key><string>Phone Controller</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>1.0</string>
-<key>CFBundleVersion</key><string>1</string>
+<key>CFBundleShortVersionString</key><string>$(MARKETING_VERSION)</string>
+<key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
+<key>PhoneControllerPrivacyURL</key><string>$(PHONE_CONTROLLER_PRIVACY_URL)</string>
+<key>PhoneControllerSupportURL</key><string>$(PHONE_CONTROLLER_SUPPORT_URL)</string>
+<key>ITSAppUsesNonExemptEncryption</key><false/>
 <key>LSRequiresIPhoneOS</key><true/>
-<key>NSCameraUsageDescription</key><string>Scan the QR code in your IControl window to pair with your computer.</string>
-<key>NSLocalNetworkUsageDescription</key><string>Send controller buttons, sticks and optional motion to your IControl computer over local Wi-Fi.</string>
+<key>NSCameraUsageDescription</key><string>Scan the QR code in your Phone Controller window to pair with your computer.</string>
+<key>NSLocalNetworkUsageDescription</key><string>Send controller buttons, sticks and optional motion to your Phone Controller computer over local Wi-Fi.</string>
 <key>NSMotionUsageDescription</key><string>Use phone rotation and acceleration as optional motion controls for games on your computer.</string>
 <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
 <key>UIApplicationSceneManifest</key><dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>

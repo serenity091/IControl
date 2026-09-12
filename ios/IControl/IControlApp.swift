@@ -20,8 +20,10 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                Text("ICONTROL").font(.headline)
-                Text(model.status).font(.caption).lineLimit(2).accessibilityIdentifier("connectionStatus")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Phone Controller").font(.headline).lineLimit(1).minimumScaleFactor(0.8)
+                    Text(model.status).font(.caption).lineLimit(2).accessibilityIdentifier("connectionStatus")
+                }
                 Spacer(minLength: 4)
                 Button(model.editing ? "Done" : "Edit layout") { model.setEditing(!model.editing) }
                 Button { model.clear(); settings = true } label: { Image(systemName: "gearshape") }.accessibilityLabel("Settings")
@@ -101,10 +103,52 @@ struct SettingsView: View {
                 Button("Calibrate gyro bias / recenter") { motion.calibrate() }.disabled(!model.motionEnabled || !model.motionAvailable)
                 Text("Keep the phone still for one second. This removes rotation-rate bias; use Eden to recenter game aim. One phone supplies one motion source.").font(.caption)
                 Button("Open app Settings") { if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) } }
+                Section("About Phone Controller") {
+                    NavigationLink("Setup and support") { AppInformationView(privacy: false) }
+                    NavigationLink("Privacy policy") { AppInformationView(privacy: true) }
+                    Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"))").font(.caption)
+                }
                 Button("Disconnect") { model.disconnect(); dismiss() }
             }.navigationTitle("Controller settings")
                 .onAppear { sensitivity = motion.sensitivity }
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
+    }
+}
+
+
+private struct AppInformationView: View {
+    let privacy: Bool
+    private var policy: String {
+        guard let url = Bundle.main.url(forResource: "PrivacyPolicy", withExtension: "txt"),
+              let value = try? String(contentsOf: url, encoding: .utf8) else {
+            return "The privacy policy could not be loaded. Please contact the developer through the App Store support page."
+        }
+        return value
+    }
+    private var publicURL: URL? {
+        let key = privacy ? "PhoneControllerPrivacyURL" : "PhoneControllerSupportURL"
+        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String,
+              let url = URL(string: value), url.scheme == "https", url.host != nil else { return nil }
+        return url
+    }
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                if privacy {
+                    Text(policy)
+                } else {
+                    Text("Turn your iPhone into a wireless gamepad for a Windows PC.").font(.headline)
+                    Text("Install the Phone Controller Windows companion and ViGEmBus driver on your PC. Keep its window open and connect both devices to the same trusted Wi-Fi network.")
+                    Text("Tap Scan QR in this app and scan the code in the PC window, then tap Join game. Allow Local Network access when asked. You can also paste the complete pairing URL without camera access.")
+                    Text("Choose Full controller or a standalone Left or Right Joy-Con layout. Use Edit layout to move and resize controls, even before connecting. Enable optional haptics and motion in Controller settings. Motion requires a compatible DSU client configured on the PC.")
+                    Text("If connection fails, check Local Network access in iOS Settings and run Enable Wi-Fi access.cmd on the PC. After restarting the PC companion, scan its new QR code.")
+                    Text("The app does not connect directly to consoles or include games. It supports up to four independent phones. One phone supplies one motion source.")
+                }
+                if let url = publicURL {
+                    Link(privacy ? "View privacy policy online" : "Support and Windows download", destination: url)
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading).padding().textSelection(.enabled)
+        }.navigationTitle(privacy ? "Privacy policy" : "Setup and support")
     }
 }

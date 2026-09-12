@@ -26,7 +26,7 @@ def free_port(kind):
 
 async def main():
     http_port, dsu_port = free_port(socket.SOCK_STREAM), free_port(socket.SOCK_DGRAM)
-    exe = Path(__file__).resolve().parents[1] / 'dist' / 'IControl.exe'
+    exe = Path(__file__).resolve().parents[1] / 'dist' / 'Phone Controller.exe'
     startup = subprocess.STARTUPINFO()
     startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startup.wShowWindow = subprocess.SW_HIDE

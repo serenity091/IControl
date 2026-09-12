@@ -19,7 +19,7 @@ struct Pairing {
     }
     enum PairingError: LocalizedError {
         case invalid
-        var errorDescription: String? { "Use the complete http://host:port/play#key=… URL from the IControl QR code." }
+        var errorDescription: String? { "Use the complete http://host:port/play#key=… URL from the Phone Controller QR code." }
     }
 }
 

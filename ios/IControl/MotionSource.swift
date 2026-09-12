@@ -10,6 +10,7 @@ import Foundation
     private var bias = [0.0, 0.0, 0.0]
     private var calibration: [[Double]]? = nil
     private var sequence = 0
+    private var timestampOrigin: Double?
     private var lastTimestamp = -1.0
     private var started = 0.0
     private var failed = false
@@ -73,8 +74,11 @@ import Foundation
             }
             return
         }
+        // Expose elapsed acquisition time, not the phone's uptime. Keep the origin
+        // across restarts so timestamp ordering remains stable with the sequence.
+        if timestampOrigin == nil { timestampOrigin = data.timestamp }
         sequence += 1
-        latest = MotionFrame(seq: sequence, timestamp: Int(data.timestamp * 1_000_000),
+        latest = MotionFrame(seq: sequence, timestamp: Int((data.timestamp - timestampOrigin!) * 1_000_000),
                              accel: configuration.holdingVector(MotionAxes.screen(a, rotation)).map { min(16, max(-16, $0)) },
                              gyro: MotionAxes.gyro(r, rotation: rotation, bias: bias, sensitivity: sensitivity, configuration: configuration))
         if status == "Starting sensors…" { status = "Streaming sensors · calibrate while still" }
