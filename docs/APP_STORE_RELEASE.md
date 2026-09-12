@@ -1,113 +1,92 @@
-# Phone Controller — iOS App Store preparation
+# Phone Controller — App Store submission
 
-Prepared on September 12, 2026. This is a release handoff, not a statement that
-Apple has accepted the app or that it has been uploaded. No further tests were
-run, as requested. See [IOS_VALIDATION.md](IOS_VALIDATION.md) for earlier results
-and unverified device/gameplay behavior. Windows packaging must be rebuilt for
-the new name; see [WINDOWS_REBUILD.md](WINDOWS_REBUILD.md).
+Prepared September 12, 2026. App Store Connect accepted version **1.0 (3)**
+into a draft marked **Item Ready to Submit**. **Submit for Review has not been
+clicked.** Release is manual after Apple approval. This is not an approval or
+live App Store release.
 
-## Prepared in this checkout
+## Completed
 
-- Display name, in-app title, permission prompts and built product:
-  **Phone Controller** / `Phone Controller.app`.
-- Version **1.0**, build **2**, controlled by `MARKETING_VERSION` and
-  `CURRENT_PROJECT_VERSION`; choose a fresh build number for every upload.
-- iPhone only, iOS 17 minimum, portrait and both landscape orientations. Existing
-  opaque 1024 × 1024 app icon is retained. No iPad support is advertised.
-- Bundled `PrivacyInfo.xcprivacy`: app-owned preferences (`CA92.1`) and elapsed
-  time/timers (`35F9.1`), no tracking and no developer data collection.
-  Native pings no longer send system uptime; motion sends time elapsed since the
-  first usable sensor sample, preserving sequence/order across mode changes.
-- Settings → About Phone Controller → Privacy policy works offline. Setup and
-  support explains Windows/driver requirements. Optional public links are read
-  from build settings so a release can point to the owner's actual URLs.
-- Release builds disable Swift testability, retain dSYM symbols, and include an
-  archive script and App Store Connect export configuration.
-- `ITSAppUsesNonExemptEncryption = NO`: this build has no custom encryption; LAN
-  transport is HTTP/WebSocket and public links use system HTTPS. Reassess if
-  encryption libraries or transport behavior change.
+- App record **6811429633**, exact bundle ID **com.jakejin.IControl**.
+- Name **Phone Controller**, subtitle **Wireless Gamepad for Windows**, category
+  **Utilities**, free pricing, availability configured for all 175 regions on
+  release. Apple Silicon Mac and Vision Pro distribution are disabled.
+- Windows-focused description, keywords, promotional text, copyright, support
+  URL, marketing URL, and reviewer setup instructions saved. Private reviewer
+  contact is entered only in App Store Connect, never in these public documents.
+- Age rating **4+** with Apple's regional equivalents; no games or third-party
+  game content are included. No app sign-in is required.
+- Owner-approved **Data Not Collected** privacy declaration published. Local-PC
+  data transfer and GitHub support/hosting practices are explained in the policy.
+- Four actual Release simulator screenshots uploaded in the 6.9-inch set;
+  App Store Connect uses them for the other required iPhone sizes. Order: full
+  controller, layout editor, Windows pairing, standalone single-stick layout.
+- Signed Release archive, App Store Connect upload, server processing and build
+  selection completed with Xcode 26.0.1 / iOS 26 SDK. iOS 17 remains the minimum.
+- Windows companion built on GitHub's Windows runner and published as a release
+  candidate. No automated test suites or new physical-device tests were run.
 
-The Xcode project/scheme/module names remain **IControl**. This is intentional:
-these internal names are not the App Store name. Keep the installed bundle ID
-when upgrading an existing app to retain its data. Do not rename UserDefaults or
-browser storage keys. The owner confirmed the App Store Connect bundle ID is **`com.jakejin.IControl`**;
-that exact case-sensitive spelling is now the shared project default. The previous
-local development install used `com.jakejin.icontrol.companion`, so the registered
-store app is a separate installation and will not inherit that app's saved layouts.
-The existing development app is not removed by this rename.
+## Public links
 
+- [Support and setup](https://serenity091.github.io/IControl/support/)
+- [Privacy policy](https://serenity091.github.io/IControl/privacy/)
+- [Marketing homepage](https://serenity091.github.io/IControl/)
+- [Windows companion release](https://github.com/serenity091/IControl/releases/tag/windows-v1.0.0-rc.1)
+- [Windows ZIP](https://github.com/serenity091/IControl/releases/download/windows-v1.0.0-rc.1/Phone-Controller-Windows.zip)
 
-## Local archive/export result
+GitHub Pages publishes the root of **codex/github-pages**. Source pages are in
+`public/`; regenerate them with `python3 scripts/build_public_site.py`, then
+publish the generated files to that Pages branch. The privacy page is generated
+from `ios/IControl/PrivacyPolicy.txt`. Support is through GitHub Issues.
 
-The Release archive and local App Store distribution export both succeeded with
-bundle ID **`com.jakejin.IControl`**, version **1.0 (2)** and the iOS 26.0 SDK.
-The archive contains the privacy manifest and offline privacy policy. The
-1024 × 1024 icon has no alpha channel. Changed Python source and the archive
-shell script passed syntax inspection; no test suites or device interactions ran.
+## Remaining owner decisions
 
-Local artifacts (not committed):
+- The owner confirmed a personal project outside a trade or profession. The
+  non-trader declaration is saved, and DSA compliance is **Active**. The Free
+  Apps Agreement is active; the unused Paid Apps Agreement is not signed.
+- Review the completed draft and explicitly authorize **Submit for Review**.
+  The app will still require manual release after approval.
+- Windows gameplay, physical motion direction, extended simultaneous touch and
+  haptic feel remain unverified in this release round. See
+  [IOS_VALIDATION.md](IOS_VALIDATION.md). Screenshots and successful compilation
+  do not establish those behaviors.
+
+## Local artifacts
+
+Not committed:
 
 - `build/ios-app-store/Phone Controller.xcarchive`
 - `build/ios-app-store/Phone Controller.ipa`
+- `build/windows-release/Phone-Controller-Windows.zip`
 
-These are preparation artifacts. Public support/privacy URLs have not yet been
-provided, so their optional in-app links are absent. Re-archive with the actual
-URLs before submission. Xcode emitted an expired-session warning for one saved
-account but completed the local export; reauthenticate in Xcode Settings →
-Accounts if Organizer asks at upload time. No upload or server-side App Store
-validation has been performed.
+Committed screenshots: `docs/app-store/screenshots/`, four 1320 × 2868 PNGs from
+an iPhone 17 Pro Max simulator running the Release app. The connected screens
+show **Preview only**, accurately reflecting the Mac preview host. The pairing
+screenshot contains no key or private network address. Images are unaltered UI
+captures, not generated marketing mockups.
 
-## Owner details still needed before upload
+The Xcode scheme/module remains **IControl**; visible product branding is
+**Phone Controller**. Existing protocol markers and preference keys are retained.
+The registered bundle ID differs from the older local development app, which is
+not removed and does not share saved layouts with this App Store installation.
 
-1. The owner confirmed an App Store Connect record and bundle ID
-   **`com.jakejin.IControl`**. Confirm the signing team has distribution access to
-   that record. A Personal Team device install is not App Store signing.
-2. Publish the [privacy policy text](../ios/IControl/PrivacyPolicy.txt) at a stable,
-   publicly accessible HTTPS URL. Publish the [support draft](app-store/SUPPORT.md)
-   with a real monitored contact and a working Windows companion download.
-   Add the publisher identity/contact to the public policy and synchronize the
-   bundled policy if those details change. No placeholder URLs are shipped.
-3. Complete [store metadata and reviewer notes](app-store/METADATA.md), copyright,
-   price/availability, current age-rating questionnaire, app privacy answers and
-   applicable account agreements/business details in App Store Connect.
-4. Capture actual release UI screenshots with no pairing keys or private network
-   addresses visible. Include Full controller, standalone left/right modes and
-   layout editing. Use a supported 6.9-inch iPhone screenshot size, such as
-   **1320 × 2868** portrait or **2868 × 1320** landscape. Supply 1–10 per supported
-   screenshot set. No new screenshots were captured under the no-tests request.
-5. Make the Windows EXE/driver setup available to App Review and provide precise
-   instructions plus a demonstration recording if needed. The app requires a PC
-   for live input; offline layout editing alone does not exercise every feature.
-6. Before a public release, arrange the remaining physical/Windows acceptance
-   checks from IOS_VALIDATION.md. Their absence is not a claim of release quality.
+## Future archive/export
 
-## Archive for distribution
-
-This Mac has Xcode 26.0.1 with the iOS 26 SDK. Apple's minimum upload requirement
-as of this preparation is iOS 26 SDK or later. Verify current requirements again
-at upload time. iOS 17 remains the deployment target, independent of the build SDK.
-
-From the repository root, set your actual release values locally:
+Choose an unused build number for each upload. From the repository root:
 
 ```sh
 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 export DEVELOPMENT_TEAM=YOUR_PAID_TEAM_ID
 export ICONTROL_BUNDLE_ID=com.jakejin.IControl
 export BUILD_NUMBER=YOUR_UNUSED_BUILD_NUMBER
-export PHONE_CONTROLLER_PRIVACY_URL=https://YOUR_DOMAIN/privacy
-export PHONE_CONTROLLER_SUPPORT_URL=https://YOUR_DOMAIN/support
+export PHONE_CONTROLLER_PRIVACY_URL=https://serenity091.github.io/IControl/privacy/
+export PHONE_CONTROLLER_SUPPORT_URL=https://serenity091.github.io/IControl/support/
 ./ios/archive.sh
 ```
 
-The script requires those fields, archives only, and never runs tests or uploads.
-Use real URLs; the example values above are not release-ready. It writes
-`build/Phone Controller.xcarchive` (ignored by Git). `ARCHIVE_PATH` and
-`MARKETING_VERSION` can override the defaults. No signing identity or team is
-checked into the project. Keep signing files, archives and IPA exports out of Git.
-
-Open the archive in Xcode Organizer. With the correct paid team, use **Distribute
-App → App Store Connect**, inspect the signing/privacy report and validate the
-archive. Alternatively, export an IPA locally using:
+The archive script never runs tests or uploads. Its default archive is
+`build/Phone Controller.xcarchive`; `ARCHIVE_PATH` overrides that location.
+Export locally with:
 
 ```sh
 xcodebuild -exportArchive \
@@ -117,28 +96,24 @@ xcodebuild -exportArchive \
   -allowProvisioningUpdates
 ```
 
-`ExportOptions.plist` uses `app-store-connect` with `destination=export`: exporting
-does not upload or publish. An App Store distribution profile/certificate and
-correct team are required; successful development signing alone does not prove
-export will work. Upload the reviewed build with Organizer or Transporter when
-ready, select it in App Store Connect, and use TestFlight before public review.
-No upload, TestFlight release or App Review submission was performed here.
+The export configuration preserves the chosen build number and uses
+`destination=export`; it does not upload. Use Organizer's App Store Connect flow
+for a future upload. Keep signing credentials, logs, archives and IPA files out
+of Git.
 
-## Privacy answers and sources
+## Privacy and platform details
 
-For the checked-in app, the proposed App Privacy answer is **Data Not Collected**:
-there are no developer/partner servers or analytics SDKs receiving app sessions.
-Local data goes to the computer the user selects, and the app stores settings on
-the phone. This is a source-based assessment, not an App Store Connect submission.
-Reassess website support processing, diagnostics, SDKs and hosting practices before
-confirming answers. Do not claim that no data ever leaves the phone; controller
-inputs, optional motion, a player name and an installation UUID do leave it.
+The bundled privacy manifest declares UserDefaults (`CA92.1`) and elapsed time
+APIs (`35F9.1`), with no tracking or developer data collection. The offline policy
+is available in Settings. Inputs, optional motion, player name and an installation
+UUID go to the user's selected PC; do not claim nothing ever leaves the phone.
+LAN traffic uses HTTP/WebSocket. Public links use system HTTPS and
+`ITSAppUsesNonExemptEncryption` is `NO`. Reassess these declarations if behavior
+or dependencies change. The retained 1024 × 1024 app icon is opaque.
 
-Apple references checked for this handoff:
+References checked during preparation:
 
-- [SDK minimum requirements](https://developer.apple.com/news/?id=ueeok6yw).
-- [Required reason API declarations](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitypereasons).
-- [App Privacy definitions](https://developer.apple.com/app-store/app-privacy-details/).
-- [Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications).
-- [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/),
-  including review access/resources and privacy policy requirements.
+- [Apple SDK requirements](https://developer.apple.com/news/?id=ueeok6yw)
+- [App Privacy definitions](https://developer.apple.com/app-store/app-privacy-details/)
+- [Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)
+- [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)

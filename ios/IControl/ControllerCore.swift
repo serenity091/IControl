@@ -86,7 +86,7 @@ struct ControlDefinition {
         .init(id: "DOWN", label: "▼", size: 0.65, landscape: .init(x:30,y:87), portrait:.init(x:25,y:75.5)),
         .init(id: "LEFT", label: "◀", size: 0.65, landscape: .init(x:25,y:74), portrait:.init(x:15,y:70)),
         .init(id: "RIGHT", label: "▶", size: 0.65, landscape: .init(x:35,y:74), portrait:.init(x:35,y:70)),
-        .init(id: "Y", label: "Y", size: 0.85, landscape: .init(x:84,y:30), portrait:.init(x:75,y:29)),
+        .init(id: "Y", label: "Y", size: 0.85, landscape: .init(x:84,y:33), portrait:.init(x:75,y:29)),
         .init(id: "B", label: "B", size: 0.85, landscape: .init(x:90,y:47), portrait:.init(x:88,y:36)),
         .init(id: "A", label: "A", size: 0.85, landscape: .init(x:84,y:64), portrait:.init(x:75,y:43)),
         .init(id: "X", label: "X", size: 0.85, landscape: .init(x:78,y:47), portrait:.init(x:62,y:36)),

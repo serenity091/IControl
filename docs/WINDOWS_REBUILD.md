@@ -1,12 +1,16 @@
-# Phone Controller — Windows rebuild handoff
+# Phone Controller — Windows build and release
 
-**Rebuild required for the rename.** Close any running IControl or Phone Controller
-window, then build from the shared **codex/native-ios-motion** branch. The output
-is now `dist/Phone Controller.exe`; old `dist/IControl.exe` builds may remain in
-an existing checkout but are no longer launched by the renamed Start script.
-Remove or archive that old executable manually once the new build is working.
-Update desktop shortcuts to the new EXE. The source changes have been prepared
-on macOS; a Windows EXE has not been built or validated on this Mac.
+**Windows rebuild completed September 12, 2026.** GitHub Actions run
+[34724003261](https://github.com/serenity091/IControl/actions/runs/34724003261)
+built commit `e1d2572` on Windows with Python 3.12. The public
+[release candidate](https://github.com/serenity091/IControl/releases/tag/windows-v1.0.0-rc.1)
+contains `Phone Controller.exe`, the Wi-Fi helper and setup notes. No new tests or
+gameplay validation were run. ZIP SHA-256:
+`2dbc72b091ab9d0547760ccc7e9eb946c322631cdcaca624ba7dcc416c93c6cc`.
+
+For a future rebuild, close any running IControl or Phone Controller window and
+use **codex/native-ios-motion**. Output is `dist/Phone Controller.exe`. Old EXEs
+may remain in an existing checkout; update shortcuts once the new build works.
 
 The desktop title, dashboard, phone browser, error messages and Setup/Build/Start/
 Stop launchers use **Phone Controller**. Keep filenames with spaces quoted.
@@ -82,17 +86,17 @@ release. The virtual controller count must return to zero when all phones leave.
 Close the EXE and verify its TCP port and UDP port are reusable and controllers
 are removed. Restart and rescan because launch pairing tokens change.
 
-For motion, follow [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md): Eden's Cemuhook/DSU
+For motion, follow [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md): the companion DSU
 server is `127.0.0.1:26760`, P1–P4 correspond to slots 0–3, and XInput remains the
-button/stick source. Enable phone motion, calibrate, then bind motion in Eden.
+button/stick source. Enable phone motion, calibrate, then bind motion in compatible PC software.
 Test pitch/yaw/roll, portrait/both landscape orientations, stationary drift,
 sensitivity and real standalone gameplay with one phone.
 Confirm background/screen lock/network loss stop motion. A subscription indicator
 or a passing packet test is not a substitute for this emulator check.
 
-Record Windows build, ViGEmBus version, Eden version, game, phone/iOS versions,
+Record Windows build, ViGEmBus version, PC client version, game, phone/iOS versions,
 axis directions and chosen sensitivity in [IOS_VALIDATION.md](IOS_VALIDATION.md).
-Windows packaging, live XInput and actual Eden motion remain Windows-side checks;
+Packaging is complete; live XInput and actual game motion remain Windows-side checks;
 Mac preview and simulator results cannot establish those outcomes.
 
 The dependency installer verifies the pinned vgamepad source archive and suppresses

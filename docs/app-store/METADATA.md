@@ -1,10 +1,10 @@
-# App Store Connect metadata draft
+# App Store Connect metadata
 
 Name: **Phone Controller**
 
 Registered bundle ID (owner confirmed): **`com.jakejin.IControl`**
 
-Subtitle: **Wireless PC Gamepad & Motion**
+Subtitle: **Wireless Gamepad for Windows**
 
 Primary category: **Utilities**.
 
@@ -53,7 +53,7 @@ Phone Controller is an independent app and is not affiliated with Nintendo or
 Microsoft. Joy-Con and Xbox names describe control compatibility. The app does
 not provide IR, NFC, Nintendo HD rumble or absolute positional tracking.
 
-## Reviewer notes — complete before submission
+## Reviewer setup reference
 
 No login or subscription is required. Live controls require a Windows PC on the
 same trusted local network. Companion download and setup resources:
@@ -73,10 +73,12 @@ a compatible PC DSU client at 127.0.0.1:26760, enable Motion in iOS settings, an
 calibrate while still. Settings also contains support and the offline privacy
 policy. Camera permission is optional because pairing URLs may be pasted.
 
-## Fields not yet completed
+## Submission fields
 
 Public privacy URL: https://serenity091.github.io/IControl/privacy/
 
 Copyright: 2026 Jake Jin. Reviewer contact details were supplied privately and
-are entered only in App Store Connect. Complete age rating, app privacy,
-territories and build selection in the store workflow.
+are entered only in App Store Connect. Age rating 4+, Data Not Collected privacy
+declaration, free pricing, worldwide availability and build 1.0 (3) are saved.
+The version is in a Ready to Submit draft with manual release selected.
+See ../APP_STORE_RELEASE.md for the remaining owner decisions.

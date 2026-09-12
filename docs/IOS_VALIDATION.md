@@ -231,3 +231,29 @@ The Windows EXE was not built on macOS. Windows must pull this revision and run
 behavior and later Windows validation. App Store public URLs, screenshots and
 review metadata still need completion; no upload or submission was performed.
 See [APP_STORE_RELEASE.md](APP_STORE_RELEASE.md) for the artifacts and release steps.
+
+
+## Public submission preparation — 2026-09-12 (supersedes handoff status above)
+
+The user authorized screenshots and public GitHub support/privacy hosting after
+the earlier rename handoff. No test suites or new physical-device runs occurred.
+
+- Built and archived Release **1.0 (3)** with the registered bundle ID
+  `com.jakejin.IControl`, Windows-focused setup wording and public links.
+- Inspected the actual simulator UI and captured four unaltered 1320 × 2868
+  screenshots: Full controller, editor, pairing and Right standalone layout.
+  Screenshots contain no pairing key or private network address. Connected UI
+  accurately says Preview only. Small landscape Y spacing adjustment included.
+- Uploaded the archive successfully to App Store Connect; processing completed,
+  build 3 was selected, and the draft passed Add for Review validation as
+  **Item Ready to Submit**. Final Submit for Review was not clicked.
+- Saved free pricing, Utilities category, Windows subtitle, 4+ age rating,
+  worldwide availability and manual release. Published owner-approved Data Not
+  Collected privacy declaration. Private contact is stored only in App Store
+  Connect. Owner-confirmed non-trader declaration is saved; EU DSA compliance is Active.
+- GitHub Pages support/privacy URLs are public, and the Windows companion was
+  built successfully on a Windows GitHub runner (run 34724003261, source
+  e1d2572) and published as windows-v1.0.0-rc.1. This is build-only evidence.
+
+Physical motion feel, all-axis hand-driven direction, extended multitouch,
+real Windows controller output and game compatibility remain as documented above.
