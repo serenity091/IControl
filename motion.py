@@ -3,13 +3,40 @@ import asyncio
 import contextlib
 import hashlib
 import secrets
+import socket
 import struct
+import sys
 import time
 import zlib
 from dataclasses import dataclass
 
 VERSION, INFO, DATA = 0x100000, 0x100001, 0x100002
 STALE_SECONDS = .25
+
+
+def motion_socket():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        if sys.platform == 'win32':
+            # A DSU subscriber may close without unregistering. Windows reports
+            # its ICMP port-unreachable as WSAECONNRESET on this shared socket;
+            # Python 3.12's proactor then stops receiving for every subscriber.
+            # Disable that per-socket reporting, not any firewall protection.
+            import ctypes as c
+            winsock = c.WinDLL('Ws2_32.dll')
+            ioctl = winsock.WSAIoctl
+            ioctl.argtypes = [c.c_size_t, c.c_ulong, c.c_void_p, c.c_ulong,
+                              c.c_void_p, c.c_ulong, c.POINTER(c.c_ulong), c.c_void_p, c.c_void_p]
+            ioctl.restype = c.c_int
+            enabled, returned = c.c_int(0), c.c_ulong()
+            if ioctl(sock.fileno(), 0x9800000C, c.byref(enabled), c.sizeof(enabled),
+                     None, 0, c.byref(returned), None, None) != 0:
+                raise c.WinError(winsock.WSAGetLastError())
+        sock.setblocking(False)
+        return sock
+    except BaseException:
+        sock.close()
+        raise
 
 
 @dataclass(frozen=True)
@@ -73,14 +100,21 @@ class MotionServer(asyncio.DatagramProtocol):
         if self.port is None:
             self.error = "Motion bridge disabled"
             return
+        sock = None
         try:
             self.closed = asyncio.get_running_loop().create_future()
+            sock = motion_socket()
+            sock.bind(('127.0.0.1', self.port))
             self.transport, _ = await asyncio.get_running_loop().create_datagram_endpoint(
-                lambda: self, local_addr=("127.0.0.1", self.port))
+                lambda: self, sock=sock)
+            sock = None  # The transport owns the socket after successful creation.
             self.port = self.transport.get_extra_info("sockname")[1]
             self.task = asyncio.create_task(self.run())
         except OSError as exc:
             self.error = f"Motion unavailable: UDP 127.0.0.1:{self.port}: {exc}"
+        finally:
+            if sock is not None:
+                sock.close()
 
     def connection_lost(self, exc):
         if self.closed is not None and not self.closed.done():

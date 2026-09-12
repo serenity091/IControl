@@ -188,6 +188,27 @@ class MotionIntegrationTests(AioHTTPTestCase):
 
 
 class LifecycleTests(unittest.IsolatedAsyncioTestCase):
+    async def test_closed_subscriber_does_not_stop_receiving_new_clients(self):
+        hub = Hub(simulate=True, dsu_port=0)
+        await hub.motion.start()
+        loop = asyncio.get_running_loop()
+        address = ('127.0.0.1', hub.motion.port)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as first:
+                first.bind(('127.0.0.1', 0)); first.setblocking(False)
+                await loop.sock_sendto(first, request(DATA, bytes(8)), address)
+                await asyncio.wait_for(loop.sock_recvfrom(first, 1024), 1)
+            # Continuing to send to the closed peer produces ICMP port-unreachable
+            # on Windows. It must not stop the shared server's receive loop.
+            await asyncio.sleep(.15)
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as second:
+                second.bind(('127.0.0.1', 0)); second.setblocking(False)
+                await loop.sock_sendto(second, request(VERSION), address)
+                data, _ = await asyncio.wait_for(loop.sock_recvfrom(second, 1024), 1)
+                self.assertEqual(data[16:20], VERSION.to_bytes(4, 'little'))
+        finally:
+            await hub.motion.close()
+
     async def test_close_with_queued_packets_releases_port_before_returning(self):
         hub = Hub(simulate=True, dsu_port=0)
         await hub.motion.start()

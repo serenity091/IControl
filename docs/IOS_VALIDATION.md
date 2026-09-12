@@ -86,6 +86,13 @@ no simulator test establishes haptic quality.
 
 ## Windows follow-up — 2026-09-12
 
+Follow-up during Eden setup: a closed DSU subscriber could trigger Windows ICMP
+port-unreachable handling and stop Python 3.12's shared UDP receive loop. The
+bridge now disables `SIO_UDP_CONNRESET` reporting on its own UDP socket. This
+does not modify Windows Firewall. A real closed-peer/new-client regression test
+failed before the fix and passed afterward. Existing subscriptions still expire
+normally; new clients and Eden's Test can continue to receive responses.
+
 - Pulled Mac implementation commit `b18e688` on `codex/native-ios-motion` and
   rebuilt `dist/IControl.exe` with Python 3.12.10 and PyInstaller 6.22.2.
 - Host: Windows 11 Pro build 26200; installed ViGEmBus driver 1.17.333.0.
