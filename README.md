@@ -48,6 +48,8 @@ The phone controller blocks double-tap and pinch zoom while preserving simultane
 
 The server listens on TCP 8080. If phones cannot connect, **Enable Wi-Fi access.cmd** requests administrator approval for a private-network, local-subnet firewall rule. Keep `enable-wifi.ps1` beside that launcher; Python is not required for this firewall helper. Use the PC's Wi-Fi address in the address selector. Guest-network isolation or VPNs may prevent local connections.
 
+If the iOS app repeatedly reports “Network stalled” on Windows while it connects to a Mac preview server, run **Enable Wi-Fi access.cmd** again. Dismissing the Windows firewall prompt can create an explicit EXE block that overrides the port allowance. The helper repairs generated private-network TCP blocks for `IControl.exe` in its own folder or `dist/`; public-network blocks remain intact. Scan this Windows server's QR inside the iOS app. A phone cannot access the localhost-only host dashboard; `/play` is the phone page.
+
 Everything works locally after installation, without accounts or internet assets. Pairing links have a random secret regenerated on each launch. HTTP traffic is unencrypted; use a trusted local network and do not forward the port to the internet. Host controls are restricted to localhost.
 
 ## Build and development
