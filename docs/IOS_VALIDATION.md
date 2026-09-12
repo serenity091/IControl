@@ -84,6 +84,34 @@ no simulator test establishes haptic quality.
 - No NFC, capture, game-driven rumble, App Store/TestFlight distribution, or
   two-independent-Joy-Con motion per phone is claimed.
 
+## Windows follow-up — 2026-09-12
+
+- Pulled Mac implementation commit `b18e688` on `codex/native-ios-motion` and
+  rebuilt `dist/IControl.exe` with Python 3.12.10 and PyInstaller 6.22.2.
+- Host: Windows 11 Pro build 26200; installed ViGEmBus driver 1.17.333.0.
+- Found and fixed Windows asynchronous UDP teardown: `transport.close()` can
+  return with queued datagrams and an occupied socket. Shutdown now awaits
+  `connection_lost`, with a bounded flush period and abort fallback. A regression
+  test reproduced WinError 10048 before the fix and passed afterward.
+- **29 Python tests and 17 browser tests passed** on Windows. The Python rerun
+  completed without the UDP ResourceWarnings seen before the fix.
+- The actual packaged EXE passed `tests/check_packaged_motion.py`: four synthetic
+  mixed clients (two motion-enabled, two button-only), independent DSU slots,
+  packet CRC/axis payload verification, stale motion neutralization, and desktop
+  shutdown while clients/subscriptions exist. Both TCP and UDP ports were
+  reusable after exit. Input is streamed at phone cadence for the fresh-sample
+  check; a one-shot sample can expire during unrelated connection setup.
+- The live EXE passed `tests/check_xinput.py`: four separate Windows controllers,
+  matching ABXY, both sticks and triggers, and controller count 0 -> 4 -> 0.
+- The final live server reported motion available on **127.0.0.1:26760**, no
+  output error, and zero controllers while idle. The UDP binding was verified
+  as loopback-only.
+- Eden **v0.2.1** was running at its main window; no game or motion bindings were
+  changed during these tests. **Physical iPhone -> this Windows PC -> Eden
+  gameplay remains unverified**, including axis direction, sensitivity, drift,
+  haptic feel, and two moving phones. The packaged test uses synthetic sensor
+  values and is not a claim of physical motion acceptance.
+
 ## Reproduce physical transport test
 
 Start the preview server and disconnect other preview clients:

@@ -62,6 +62,7 @@ class MotionServer(asyncio.DatagramProtocol):
     def __init__(self, hub, port=26760):
         self.hub, self.port = hub, port
         self.transport = self.task = None
+        self.closed = None
         self.error = None
         self.server_id = secrets.randbits(32)
         self.subscriptions = {}  # (endpoint, client ID, slot) -> expiry
@@ -73,12 +74,17 @@ class MotionServer(asyncio.DatagramProtocol):
             self.error = "Motion bridge disabled"
             return
         try:
+            self.closed = asyncio.get_running_loop().create_future()
             self.transport, _ = await asyncio.get_running_loop().create_datagram_endpoint(
                 lambda: self, local_addr=("127.0.0.1", self.port))
             self.port = self.transport.get_extra_info("sockname")[1]
             self.task = asyncio.create_task(self.run())
         except OSError as exc:
             self.error = f"Motion unavailable: UDP 127.0.0.1:{self.port}: {exc}"
+
+    def connection_lost(self, exc):
+        if self.closed is not None and not self.closed.done():
+            self.closed.set_result(None)
 
     async def close(self):
         if self.task:
@@ -90,8 +96,16 @@ class MotionServer(asyncio.DatagramProtocol):
             slot.motion = None
         self.tick()
         if self.transport:
-            self.transport.close()
+            transport = self.transport
             self.transport = None
+            transport.close()
+            # close() only schedules flushing. Keep the Windows event loop alive
+            # until pending datagrams finish and connection_lost releases the socket.
+            try:
+                await asyncio.wait_for(asyncio.shield(self.closed), .5)
+            except asyncio.TimeoutError:
+                transport.abort()
+                await self.closed
         self.subscriptions.clear()
 
     def capability(self):

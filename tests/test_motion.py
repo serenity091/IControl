@@ -188,6 +188,23 @@ class MotionIntegrationTests(AioHTTPTestCase):
 
 
 class LifecycleTests(unittest.IsolatedAsyncioTestCase):
+    async def test_close_with_queued_packets_releases_port_before_returning(self):
+        hub = Hub(simulate=True, dsu_port=0)
+        await hub.motion.start()
+        port = hub.motion.port
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as receiver:
+                receiver.bind(('127.0.0.1', 0))
+                hub.motion.datagram_received(request(DATA, bytes(8)), receiver.getsockname())
+                for _ in range(32):
+                    hub.motion.tick()
+                await hub.motion.close()
+                # No sleep: close must wait for the actual OS socket release.
+                with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
+                    probe.bind(('127.0.0.1', port))
+        finally:
+            await hub.motion.close()
+
     async def test_port_conflict_and_cleanup(self):
         hub = Hub(simulate=True, dsu_port=0)
         await hub.motion.start()

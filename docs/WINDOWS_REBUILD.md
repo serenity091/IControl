@@ -45,6 +45,16 @@ With an idle **live** server and no other phones/physical XInput pads, run:
 .\.venv\Scripts\python.exe tests/check_xinput.py
 ```
 
+An isolated packaged motion/lifecycle test is also available:
+
+```powershell
+.\.venv\Scripts\python.exe tests/check_packaged_motion.py
+```
+
+It launches a test-owned preview EXE on temporary ports, streams synthetic motion,
+checks DSU output and stale neutralization, and verifies desktop shutdown releases
+both sockets. It does not drive Windows controllers or validate real phone gyro.
+
 Then check four independent players across native and browser clients, actual
 XInput button/stick output, simultaneous contacts, disconnect/rejoin and host
 release. The virtual controller count must return to zero when all phones leave.
