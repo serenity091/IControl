@@ -1,5 +1,9 @@
 # IControl
 
+**Next iOS feature:** [Joy-Con implementation task](docs/JOYCON_TASK.md) and
+[Mac handoff](docs/JOYCON_HANDOFF.md). These describe requested work; Joy-Con mode
+has not been implemented yet.
+
 Local phone controllers for Windows and Eden. The desktop app displays a QR code; up to four phones join over Wi-Fi and become virtual Xbox controllers.
 
 ## Native iPhone app
