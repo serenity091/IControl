@@ -1,6 +1,6 @@
 # IControl iOS handoff
 
-Prepared 2026-09-12. This is a development brief, not an implemented iOS app.
+Prepared 2026-09-12. **Historical development brief.** The native app and motion bridge have since been implemented; see [ios/README.md](../ios/README.md), [IOS_VALIDATION.md](IOS_VALIDATION.md), and [WINDOWS_REBUILD.md](WINDOWS_REBUILD.md) for current status. The sections below describe the original handoff.
 
 ## Goal
 

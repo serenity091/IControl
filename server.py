@@ -14,6 +14,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from motion import MotionServer, sanitize_motion
+
 import qrcode
 import qrcode.image.svg
 from aiohttp import web, WSMsgType
@@ -103,6 +105,9 @@ class Slot:
     epoch: int = 0
     awaiting_reset: bool = False
     announced_epoch: int = -1
+    motion: object = None
+    motion_seq: int = -1
+    motion_timestamp: int = -1
 
 
 def lan_addresses():
@@ -121,7 +126,7 @@ def lan_addresses():
 
 
 class Hub:
-    def __init__(self, port=8080, simulate=False, output=None):
+    def __init__(self, port=8080, simulate=False, output=None, dsu_port=26760):
         self.port = port
         self.token = secrets.token_urlsafe(24)
         self.admin_token = secrets.token_urlsafe(24)
@@ -129,9 +134,11 @@ class Hub:
         self.addresses = lan_addresses()
         self.output = output if output is not None else Output(simulate)
         self.slots = [Slot() for _ in range(4)]
+        self.motion = MotionServer(self, dsu_port)
 
     def reset(self, index):
         self.slots[index].state = neutral()
+        self.slots[index].motion = None
         self.output.apply(index, neutral())
 
     def expire_inputs(self, index, now):
@@ -152,6 +159,7 @@ class Hub:
             "maxPlayers": 4,
             "mode": "preview" if self.output.simulate else "live",
             "error": self.output.error,
+            "motion": self.motion.capability(),
             "players": [{"player": i + 1, "connected": s.ws is not None,
                          "name": s.name, "reserved": s.ws is None and s.reserved_until > time.monotonic(),
                          "state": s.state} for i, s in enumerate(self.slots)],
@@ -282,8 +290,10 @@ async def controller_socket(request):
         slot.client, slot.name, slot.ws = client, str(data.get("name", "Phone"))[:32], ws
         slot.last_input = now
         slot.epoch, slot.announced_epoch, slot.awaiting_reset = 0, -1, False
+        slot.motion_seq = slot.motion_timestamp = -1
         hub.reset(index)
-        await ws.send_json({"type": "joined", "player": index + 1, "epoch": slot.epoch, "mode": "preview" if hub.output.simulate else "live"})
+        await ws.send_json({"type": "joined", "player": index + 1, "epoch": slot.epoch, "mode": "preview" if hub.output.simulate else "live",
+                            "capabilities": {"motion": hub.motion.capability()}})
         rate_start, count = now, 0
         async for message in ws:
             if hub.slots[index] is not slot or slot.ws is not ws:
@@ -308,12 +318,24 @@ async def controller_socket(request):
                         await ws.send_json({"type": "reset", "epoch": slot.epoch})
                         slot.announced_epoch = slot.epoch
                     continue
+                recovering = slot.awaiting_reset
+                sample = sanitize_motion(data.get("motion"), now)
+                if recovering and sample is not None:
+                    # Reset acknowledgement must clear both input and motion.
+                    continue
+                if sample is not None:
+                    if sample.seq <= slot.motion_seq or sample.timestamp <= slot.motion_timestamp:
+                        sample = slot.motion  # Duplicate samples never refresh the stale deadline.
+                    else:
+                        slot.motion_seq, slot.motion_timestamp = sample.seq, sample.timestamp
+                slot.motion = sample if hub.motion.transport is not None else None
                 slot.awaiting_reset = False
                 slot.state = incoming
                 slot.last_input = now
                 hub.output.apply(index, slot.state)
             elif data.get("type") == "ping":
-                await ws.send_json({"type": "pong", "time": data.get("time")})
+                await ws.send_json({"type": "pong", "time": data.get("time"),
+                                    "motionSubscribers": hub.motion.subscribers(index)})
     except (ValueError, TypeError, asyncio.TimeoutError):
         await ws.close(code=1008, message=b"Invalid controller message")
     finally:
@@ -327,11 +349,13 @@ async def controller_socket(request):
 
 
 async def lifecycle(app):
+    await app[HUB_KEY].motion.start()
     task = asyncio.create_task(app[HUB_KEY].watchdog())
     yield
     task.cancel()
     with contextlib.suppress(asyncio.CancelledError):
         await task
+    await app[HUB_KEY].motion.close()
     app[HUB_KEY].output.close()
 
 
@@ -376,7 +400,11 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--simulate", action="store_true", help="Preview without virtual controller output")
     parser.add_argument("--open", action="store_true", help="Open the laptop dashboard")
+    parser.add_argument("--no-motion", action="store_true", help="Disable the loopback DSU motion bridge")
+    parser.add_argument("--dsu-port", type=int, default=26760)
     args = parser.parse_args()
+    if not 1 <= args.dsu_port <= 65535:
+        parser.error("DSU port must be between 1 and 65535")
     if not 1 <= args.port <= 65535:
         parser.error("Port must be between 1 and 65535")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
@@ -393,7 +421,7 @@ if __name__ == "__main__":
                 webbrowser.open(f"http://localhost:{args.port}")
                 parser.exit(message="IControl is already running. Opened its dashboard.\n")
             parser.exit(1, f"Port {args.port} is already in use. Stop that server or choose --port.\n")
-    hub = Hub(args.port, args.simulate)
+    hub = Hub(args.port, args.simulate, dsu_port=None if args.no_motion else args.dsu_port)
     print(f"IControl dashboard: http://localhost:{args.port}")
     print(hub.output.error or ("PREVIEW ONLY: no controller output" if args.simulate else "Ready. Virtual controllers are created as phones join (up to four)."))
     if args.open:

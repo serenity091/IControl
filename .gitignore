@@ -14,3 +14,9 @@ xcuserdata/
 .env.*
 *.p12
 *.mobileprovision
+
+.build/
+.swiftpm/
+*.xcresult
+*.cer
+*.p8

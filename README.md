@@ -2,9 +2,9 @@
 
 Local phone controllers for Windows and Eden. The desktop app displays a QR code; up to four phones join over Wi-Fi and become virtual Xbox controllers.
 
-## iOS development handoff
+## Native iPhone app
 
-The native iPhone app is planned, not implemented yet. Start with [the Mac handoff](docs/MAC_HANDOFF.md), [the existing wire protocol](docs/CONTROLLER_PROTOCOL.md), and [the ready-to-paste iOS task](docs/IOS_TASK.md). The Windows server still needs a motion bridge for Eden; reading gyro data on the iPhone alone is not enough.
+The Swift/SwiftUI companion is implemented under [ios/](ios/README.md), with QR/manual pairing, independent touches, saved layouts, adjustable native button/joystick haptics, and optional Core Motion. The Python server now includes a loopback DSU/Cemuhook motion bridge for Eden. Rebuild the Windows EXE to use it; existing browser clients remain compatible. See [motion setup](docs/MOTION_PROTOCOL.md), [build and validation results](docs/IOS_VALIDATION.md), and the [Windows rebuild handoff](docs/WINDOWS_REBUILD.md). Actual Eden gameplay still needs Windows validation.
 
 ## Open and play
 
@@ -40,7 +40,7 @@ LB/RB are shoulders, LT/RT are triggers, minus/plus are Back/Start, and L3/R3 cl
 
 Tap **Edit layout**, drag a control, and adjust its size. Tap empty space to resize all controls. **Done** saves changes; **Reset** restores the classic defaults. Portrait and landscape layouts save separately in each phone browser. The new Xbox layout has its own saved-layout version; earlier layout data is retained but not automatically applied.
 
-Multi-touch supports sticks and buttons together. Input is released on disconnect, when the page is hidden, and when editing. The server also clears stale input after 750 ms, rejects queued input from before the timeout, and requires the phone to acknowledge neutral before resuming. The phone independently checks global pointer releases, native touch contacts, capture ownership, and browser suspension. After an interruption, lift and touch the controls again; normal stationary holds are not timed out. Gyro, NFC, capture and rumble are not implemented. Full screen and wake lock depend on phone/browser support; some browsers restrict them on local HTTP.
+Multi-touch supports sticks and buttons together. Input is released on disconnect, when the page is hidden, and when editing. The server also clears stale input after 750 ms, rejects queued input from before the timeout, and requires the phone to acknowledge neutral before resuming. The phone independently checks global pointer releases, native touch contacts, capture ownership, and browser suspension. After an interruption, lift and touch the controls again; normal stationary holds are not timed out. The browser has no gyro or native haptics; optional motion and tactile feedback are available in the native iPhone app. NFC, capture and game-driven rumble are not implemented. Full screen and wake lock depend on phone/browser support; some browsers restrict them on local HTTP.
 
 The phone controller blocks double-tap and pinch zoom while preserving simultaneous stick/button touches. Text fields use a mobile-friendly font size to avoid focus zoom.
 
