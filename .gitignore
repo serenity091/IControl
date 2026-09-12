@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.log
+artifacts/
+build/
+dist/
+handoff/
+*.spec
+.DS_Store
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.env
+.env.*
+*.p12
+*.mobileprovision
