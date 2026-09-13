@@ -4,6 +4,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / 'public'
+SITE.mkdir(parents=True, exist_ok=True)
+# Keep the website's branding identical to the shipped iPhone app.
+(SITE / 'app-icon.png').write_bytes(
+    (ROOT / 'ios/IControl/Assets.xcassets/AppIcon.appiconset/AppIcon.png').read_bytes()
+)
 BASE = 'https://serenity091.github.io/IControl/'
 REPO = 'https://github.com/serenity091/IControl'
 RELEASE = REPO + '/releases/tag/windows-v1.0.0-rc.1'
@@ -16,15 +21,16 @@ def page(path, title, body):
     content = f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{escape(title)} · Phone Controller</title><meta name="description" content="Phone Controller: a wireless iPhone gamepad for your Windows PC. Support, setup and privacy information.">
-<link rel="canonical" href="{canonical}"><link rel="icon" href="{prefix}icon.svg" type="image/svg+xml"><link rel="stylesheet" href="{prefix}style.css"></head>
-<body><header><a class="brand" href="{prefix}"><img src="{prefix}icon.svg" alt="">Phone Controller</a><nav aria-label="Main navigation"><a href="{prefix}support/">Support</a><a href="{prefix}privacy/">Privacy</a></nav></header>
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#181818">
+<link rel="canonical" href="{canonical}"><link rel="icon" href="{prefix}app-icon.png" type="image/png"><link rel="apple-touch-icon" href="{prefix}app-icon.png"><link rel="stylesheet" href="{prefix}style.css"></head>
+<body><header><a class="brand" href="{prefix}"><img src="{prefix}app-icon.png" alt="" width="44" height="44">Phone Controller</a><nav aria-label="Main navigation"><a href="{prefix}support/">Support</a><a href="{prefix}privacy/">Privacy</a></nav></header>
 <main>{body}</main><footer><span>Phone Controller · Maintained by <a href="https://github.com/serenity091">serenity091</a></span><a href="{REPO}">Source on GitHub</a></footer></body></html>'''
-    (folder / 'index.html').write_text(content)
+    (folder / 'index.html').write_text(content, encoding='utf-8')
 
 page('', 'Wireless gamepad for your PC', f'''
 <p class="eyebrow">Your phone. Your controls.</p><h1>A gamepad in<br>your pocket.</h1>
 <p class="lead">Turn your iPhone into a wireless controller for your Windows PC, with customizable touch controls and optional motion input.</p>
-<a class="button" href="{RELEASE}">Windows companion download</a><a class="button" href="support/">Setup and support</a>
+<div class="actions"><a class="button" href="{RELEASE}">Windows companion download</a><a class="button secondary" href="support/">Setup and support</a></div>
 <p><small>iPhone app: preparing for App Store release. Windows companion: release candidate.</small></p>
 <div class="card"><h2>Made for local play</h2><p>Use a full two-stick controller or a left- or right-hand single-stick layout. Move and resize controls, switch between upright and sideways layouts, and enable native haptic feedback.</p><p>Up to four phones can connect independently. Each phone supplies one motion source.</p></div>
 <h2>What you need</h2><p>An iPhone running iOS 17 or later, a Windows PC with the companion and ViGEmBus driver, and a trusted local Wi-Fi network. Games must support controller input. Motion requires a compatible DSU client and its own bindings.</p>
@@ -40,7 +46,7 @@ page('support', 'Support and setup', f'''
 <div class="card"><h2>Contact support</h2><p><a href="{REPO}/issues/new">Open a support issue on GitHub</a> or <a href="{REPO}/issues">browse existing issues</a>. This is the project's support channel and requires a GitHub account to post.</p><p>Include the app version, iOS version, Windows version and steps to reproduce the problem. GitHub issues are public: do not post pairing keys, QR codes, personal information or private logs.</p></div>
 <p><a href="../privacy/">Privacy policy</a>. Phone Controller is an independent app, not affiliated with Nintendo or Microsoft. It does not provide IR, NFC, Nintendo HD rumble or absolute positional tracking.</p>''')
 
-policy = (ROOT / 'ios/IControl/PrivacyPolicy.txt').read_text().strip().split('\n\n')
+policy = (ROOT / 'ios/IControl/PrivacyPolicy.txt').read_text(encoding='utf-8').strip().split('\n\n')
 body = '<p class="eyebrow">Your information</p><h1>Privacy policy</h1>'
 for index, part in enumerate(policy):
     if index == 0:
