@@ -1,10 +1,16 @@
-# IControl
+# Phone Controller
 
-Local phone controllers for Windows and Eden. The desktop app displays a QR code; up to four phones join over Wi-Fi and become virtual Xbox controllers.
+Turn your iPhone into a customizable wireless controller for your Windows PC.
 
-## iOS development handoff
+- [Download for iPhone on the App Store](https://apps.apple.com/app/id6811429633) — free, requires iOS 17 or later.
+- [Download the Windows companion](https://github.com/serenity091/IControl/releases/tag/windows-v1.0.0-rc.1)
+- [Setup and support](https://serenity091.github.io/IControl/support/) · [Privacy policy](https://serenity091.github.io/IControl/privacy/)
 
-The native iPhone app is planned, not implemented yet. Start with [the Mac handoff](docs/MAC_HANDOFF.md), [the existing wire protocol](docs/CONTROLLER_PROTOCOL.md), and [the ready-to-paste iOS task](docs/IOS_TASK.md). The Windows server still needs a motion bridge for Eden; reading gyro data on the iPhone alone is not enough.
+Connect your iPhone and Windows PC to the same trusted local Wi-Fi network. The Windows companion requires the [ViGEmBus driver](https://github.com/nefarius/ViGEmBus/releases).
+
+## Source and development
+
+The current native iPhone app and Windows companion source are on the [codex/native-ios-motion branch](https://github.com/serenity091/IControl/tree/codex/native-ios-motion). The `main` branch contains the original IControl Windows/browser implementation; the instructions below describe that source version. For the released app, use the downloads and setup guide above.
 
 ## Open and play
 
