@@ -19,8 +19,8 @@ for (let i = 1; i <= 4; i++) {
 function update(status) {
   $('server-state').textContent = status.error ? 'Driver needs attention' : status.mode === 'preview' ? 'Preview mode · no output' : 'Server running';
   $('server-dot').className = `status-dot${status.error ? ' error' : ''}`;
-  $('notice').hidden = !status.error && status.mode !== 'preview';
-  $('notice').textContent = status.error || 'Preview mode: phone inputs are visible here, but no virtual controllers are connected to Windows. Restart without --simulate to play.';
+  $('notice').hidden = !status.error && !status.motion?.error && status.mode !== 'preview';
+  $('notice').textContent = status.error || status.motion?.error || 'Preview mode: phone inputs are visible here, but no virtual controllers are connected to Windows. Restart without --simulate to play.';
   const connectedCount = status.players.filter(p => p.connected).length;
   $('player-count').textContent = `${connectedCount} connected`;
   empty.hidden = status.players.some(p => p.connected || p.reserved);

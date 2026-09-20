@@ -1,5 +1,8 @@
 # Paste this task into Codex on the Mac
 
+This original app task has been implemented. For the next requested feature, use
+[JOYCON_TASK.md](JOYCON_TASK.md) and [JOYCON_HANDOFF.md](JOYCON_HANDOFF.md).
+
 Build a native iPhone companion app for this IControl project. First read docs/MAC_HANDOFF.md, docs/CONTROLLER_PROTOCOL.md, README.md, server.py, and static/controller.js. The handoff documents distinguish existing features from work still required.
 
 Create a buildable Swift/SwiftUI iOS app under ios/ that connects to the existing Windows server by scanning its QR code, with a manual pairing URL fallback. Preserve the simple classic gray/black Xbox layout, independent simultaneous touches, editable control positions/sizes, orientation-specific saved layouts, and four independent players across mixed native/browser clients. Add optional native button-press haptic feedback. Preserve all input release, watchdog epoch acknowledgement, backpressure, and reconnection safeguards so sticks/buttons cannot get stuck.

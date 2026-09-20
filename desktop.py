@@ -17,13 +17,14 @@ from server import Hub, Slot, create_app
 
 
 class ServerThread:
-    def __init__(self, port=8080, simulate=False):
+    def __init__(self, port=8080, simulate=False, dsu_port=26760):
         self.port, self.simulate = port, simulate
+        self.dsu_port = dsu_port
         self.events = queue.Queue()
         self.loop = None
         self.stop_event = None
         self.stop_requested = threading.Event()
-        self.thread = threading.Thread(target=self.run, name="IControl server", daemon=False)
+        self.thread = threading.Thread(target=self.run, name="Phone Controller server", daemon=False)
 
     def start(self):
         self.thread.start()
@@ -55,7 +56,7 @@ class ServerThread:
     async def serve(self):
         self.loop = asyncio.get_running_loop()
         self.stop_event = asyncio.Event()
-        self.hub = Hub(self.port, self.simulate)
+        self.hub = Hub(self.port, self.simulate, dsu_port=self.dsu_port)
         runner = web.AppRunner(create_app(self.hub, self.stop), access_log=None, shutdown_timeout=2)
         try:
             await runner.setup()
@@ -75,20 +76,20 @@ class ServerThread:
 
 
 class Desktop:
-    def __init__(self, root, port=8080, simulate=False, auto_close=None):
+    def __init__(self, root, port=8080, simulate=False, auto_close=None, dsu_port=26760):
         self.root = root
         self.port = port
         self.closing = False
         self.failed = False
-        self.server = ServerThread(port, simulate)
+        self.server = ServerThread(port, simulate, dsu_port)
         self.scale = root.winfo_fpixels("1i") / 96
         self.qr_size = round(240 * self.scale)
-        root.title("IControl")
+        root.title("Phone Controller")
         root.geometry(f"{round(760*self.scale)}x{round(620*self.scale)}")
         root.minsize(round(720*self.scale), round(600*self.scale))
         root.configure(bg="#ededed")
         root.protocol("WM_DELETE_WINDOW", self.close)
-        icon = Path(__file__).parent / "assets" / "icontrol.ico"
+        icon = Path(__file__).parent / "assets" / "phone-controller.ico"
         if icon.exists():
             root.iconbitmap(str(icon))
         style = ttk.Style(root)
@@ -97,7 +98,7 @@ class Desktop:
         style.configure("TCombobox", padding=5)
         header = tk.Frame(root, bg="#252525", padx=24, pady=17)
         header.pack(fill="x")
-        tk.Label(header, text="IControl", font=("Segoe UI", 21, "bold"), bg="#252525", fg="white").pack(side="left")
+        tk.Label(header, text="Phone Controller", font=("Segoe UI", 21, "bold"), bg="#252525", fg="white").pack(side="left")
         self.status = tk.Label(header, text="Starting server…", bg="#252525", fg="#aadd83", font=("Segoe UI", 10))
         self.status.pack(side="right")
         body = tk.Frame(root, bg="#ededed", padx=24, pady=20)
@@ -162,6 +163,8 @@ class Desktop:
                     count = sum(p["connected"] for p in active)
                     self.count.configure(text=f"{count} player{'s' if count != 1 else ''} connected" if count else "No players connected")
                     self.status.configure(text="Driver unavailable" if value["error"] else "Preview mode" if value["mode"] == "preview" else "Server running")
+                    if value.get("motion", {}).get("error"):
+                        self.hint.configure(text=value["motion"]["error"], wraplength=330)
                     if value["error"]:
                         self.hint.configure(text=value["error"], wraplength=330)
                     signature = [(p["player"], p["name"], p["connected"]) for p in active]
@@ -179,7 +182,7 @@ class Desktop:
                 elif kind == "error":
                     self.failed = True
                     self.status.configure(text="Could not start", fg="#ffaaaa")
-                    self.hint.configure(text=f"{value}\n\nPort {self.port} may already be in use. Close the other IControl window or stop the old server, then open this app again.", wraplength=310)
+                    self.hint.configure(text=f"{value}\n\nPort {self.port} may already be in use. Close the other Phone Controller window or stop the old server, then open this app again.", wraplength=310)
                 elif kind == "stopped" and not self.failed:
                     self.closing = True
         except queue.Empty:
@@ -202,14 +205,18 @@ def main():
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--simulate", action="store_true")
     parser.add_argument("--auto-close", type=float, help=argparse.SUPPRESS)
+    parser.add_argument("--no-motion", action="store_true")
+    parser.add_argument("--dsu-port", type=int, default=26760)
     args = parser.parse_args()
+    if not 1 <= args.dsu_port <= 65535:
+        parser.error("DSU port must be between 1 and 65535")
     try:
         import ctypes
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
     except Exception:
         pass
     root = tk.Tk()
-    app = Desktop(root, args.port, args.simulate, args.auto_close)
+    app = Desktop(root, args.port, args.simulate, args.auto_close, None if args.no_motion else args.dsu_port)
     try:
         root.mainloop()
     finally:

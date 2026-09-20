@@ -1,6 +1,6 @@
 # Current controller wire protocol
 
-This describes the existing `server.py` at the 2026-09-12 handoff, before native iOS/motion work. Source and tests are authoritative. JSON examples use placeholders, not live pairing secrets.
+This describes the backward-compatible base protocol. The native/motion implementation adds fields documented in [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md); existing browser frames remain valid. Source and tests are authoritative. JSON examples use placeholders, not live pairing secrets.
 
 ## Pairing and connection
 
@@ -74,8 +74,17 @@ Errors: `{"type":"error","message":"...","fatal":true}`. Show the message and st
 
 A disconnected phone reserves its player number for 15 seconds, but its virtual controller is removed immediately. A new connection with its client ID can reclaim the slot if available. Windows may assign a different XInput device index after reconnection.
 
-## Host-only endpoints and future motion
+## Host-only endpoints and optional motion
 
 `/`, `/api/bootstrap`, `/api/status`, `/api/qr`, `/api/stop`, and `/api/players/N/release` are localhost-only admin endpoints. A phone must not try to fetch bootstrap for its key or require an admin token. The phone uses the scanned QR and `/ws` only.
 
-There is no gyro message or haptic command in this protocol yet. Native button haptics can be generated entirely on the phone. Gyro support needs a negotiated extension and a server-side motion bridge; the current Xbox output has no gyro field. See `MAC_HANDOFF.md` for that work.
+Haptics are generated locally by the native app, without a haptic command. Motion uses the versioned optional `input.motion` field and advertised `joined.capabilities.motion`, with DSU output alongside XInput. See [MOTION_PROTOCOL.md](MOTION_PROTOCOL.md). Xbox output itself still has no gyro field.
+
+
+### Phone Controller branding compatibility
+
+Phone Controller retains `app: "IControl"` in host status as the stable discovery
+identifier and adds `displayName: "Phone Controller"`. Clients must not use the
+visible name as a new protocol version. Native pings send `time: 0` because they
+use pong arrival for liveness and do not display round-trip latency; the browser
+continues to use its echoed time for latency. Packet shapes and behavior are unchanged.
