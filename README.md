@@ -1,14 +1,14 @@
 # Phone Controller
 
+Turn your iPhone into a customizable wireless controller for your Windows PC.
+
+- [Download for iPhone on the App Store](https://apps.apple.com/app/id6811429633) — free, requires iOS 17 or later.
+- [Download the Windows companion](https://github.com/serenity091/IControl/releases/tag/windows-v1.0.0-rc.1)
+- [Setup and support](https://serenity091.github.io/IControl/support/) · [Privacy policy](https://serenity091.github.io/IControl/privacy/)
+
+Connect your iPhone and Windows PC to the same trusted local Wi-Fi network. The Windows companion requires the [ViGEmBus driver](https://github.com/nefarius/ViGEmBus/releases).
+
 Previously named IControl. Windows packaging now produces **Phone Controller.exe**.
-See the [Windows rebuild handoff](docs/WINDOWS_REBUILD.md) and
-[iOS App Store release preparation](docs/APP_STORE_RELEASE.md).
-
-**Next iOS feature:** [Joy-Con implementation task](docs/JOYCON_TASK.md) and
-[Mac handoff](docs/JOYCON_HANDOFF.md). These describe requested work; Joy-Con mode
-has not been implemented yet.
-
-Local phone controllers for Windows and Eden. The desktop app displays a QR code; up to four phones join over Wi-Fi and become virtual Xbox controllers.
 
 ## Native iPhone app
 
